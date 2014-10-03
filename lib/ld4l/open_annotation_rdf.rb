@@ -24,16 +24,18 @@ module LD4L
 
 
     # RDF vocabularies
-    autoload :OA,                  'ld4l/open_annotation_rdf/vocab/oa'
-    autoload :CNT,                 'ld4l/open_annotation_rdf/vocab/cnt'
+    autoload :OA,                    'ld4l/open_annotation_rdf/vocab/oa'
+    autoload :CNT,                   'ld4l/open_annotation_rdf/vocab/cnt'
+    autoload :DCTYPES,               'ld4l/open_annotation_rdf/vocab/dctypes'
 
 
     # autoload classes
     autoload :Configuration,         'ld4l/open_annotation_rdf/configuration'
+    autoload :Person,                'ld4l/open_annotation_rdf/person'
     autoload :ResourceExtension,     'ld4l/open_annotation_rdf/resource_extension'
     autoload :Annotation,            'ld4l/open_annotation_rdf/annotation'
-    autoload :CommentAnnotation,     'ld4l/open_annotation_rdf/collection_annotation'
-    autoload :CommentBody,           'ld4l/open_annotation_rdf/collection_body'
+    autoload :CommentAnnotation,     'ld4l/open_annotation_rdf/comment_annotation'
+    autoload :CommentBody,           'ld4l/open_annotation_rdf/comment_body'
     autoload :TagAnnotation,         'ld4l/open_annotation_rdf/tag_annotation'
     autoload :SemanticTagAnnotation, 'ld4l/open_annotation_rdf/semantic_tag_annotation'
 

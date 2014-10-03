@@ -27,10 +27,12 @@ The LD4L::OpenAnnotationRDF gem provides model definitions using the
 [ActiveTriples](https://github.com/no-reply/ActiveTriples) framework extension of 
 [ruby-rdf/rdf](https://github.com/ruby-rdf/rdf).  The following models are provided:
 
-1. LD4L::OpenAnnotationRDF::Target - Implements an open annotation target.
-  a. Basic metadata about the target is maintained as defined in the Open Annotation ontology.
-2. LD4L::OpenAnnotationRDF::Body - Models each item in a virtual collection.
-  a. Each item is an ORE Proxy defined in the [ORE ontology](http://www.openarchives.org/ore/1.0/vocabulary#otherRelationships).
+1. LD4L::OpenAnnotationRDF::Annotation - Implements an open annotation.
+  a. Target and Body metadata
+1. LD4L::OpenAnnotationRDF::CommentAnnotation - Extends Annotation to implement a comment annotation of free-form text.
+1. LD4L::OpenAnnotationRDF::CommentBody - Extends Annotation to implement the body of a comment annotation holding the free-form text.
+1. LD4L::OpenAnnotationRDF::TagAnnotation - Extends Annotation to implement a tag annotation of user specified short phrase tag.
+1. LD4L::OpenAnnotationRDF::SemanticTagAnnotation - Extends Annotation to implement a semantic tag annotation with values limited to a controlled vocabulary.
 
 ### Ontologies
 

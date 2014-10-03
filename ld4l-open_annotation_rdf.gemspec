@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   # spec.test_files    = `git ls-files -- {spec}/*`.split("\n")               # FROM ActiveTriples gemspec file
   # spec.require_paths = ["lib"]                                              # NOT IN ActiveTriples gemspec file
 
+#  spec.add_dependency('ffi', '~> 1.9.5')
   spec.add_dependency('rdf', '~> 1.1')
   spec.add_dependency('active-triples', '~> 0.2')
 

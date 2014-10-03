@@ -1,12 +1,17 @@
-module LD4L module OpenAnnotationRDF
-  class OpenAnnotationBodyRDF < RDFTypes::ResourceExtension
+require 'ld4l/open_annotation_rdf/vocab/cnt'
+require 'rdf'
 
-    @id_prefix="oab"
+module LD4L
+  module OpenAnnotationRDF
+    class CommentBody < LD4L::OpenAnnotationRDF::ResourceExtension
 
-    configure :base_uri => Rails.configuration.urigenerator.base_uri, :repository => :default
+      @id_prefix="cb"
 
-    property :type,    :predicate => RDF::type                   # :type => URI
-    property :content, :predicate => RDFVocabularies::CNT.chars  # :type => XSD.string
-    property :format,  :predicate => RDF::DC.format              # :type => XSD.string
+      configure :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
+
+      property :type,    :predicate => RDF::type                   # :type => URI         # Set up here because need to set two types.
+      property :content, :predicate => RDFVocabularies::CNT.chars  # :type => XSD.string
+      property :format,  :predicate => RDF::DC.format              # :type => XSD.string
+    end
   end
 end

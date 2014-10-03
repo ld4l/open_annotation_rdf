@@ -16,8 +16,8 @@ describe "LD4L::OpenAnnotationRDF" do
 
     it "should use configured value in Annotation class" do
       # FIXME fails if run with all tests because LD4L::OpenAnnotationRDF::Annotation is already loaded by other tests
-      vc = LD4L::OpenAnnotationRDF::Annotation.new('1')
-      expect(vc.rdf_subject.to_s).to eq "http://localhost:3000/test/vc1"
+      oa = LD4L::OpenAnnotationRDF::Annotation.new('1')
+      expect(oa.rdf_subject.to_s).to eq "http://localhost:3000/test/oa1"
     end
 
     after :each do
