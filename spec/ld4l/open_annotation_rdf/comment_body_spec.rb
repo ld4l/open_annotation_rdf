@@ -1,4 +1,7 @@
 require 'spec_helper'
+require 'ld4l/open_annotation_rdf/vocab/dctypes'
+require 'ld4l/open_annotation_rdf/vocab/oa'
+
 
 describe 'LD4L::OpenAnnotationRDF::CommentBody' do
 
