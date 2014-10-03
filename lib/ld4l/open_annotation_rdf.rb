@@ -1,5 +1,6 @@
 require 'rdf'
 require 'active_triples'
+require	'linkeddata'
 require 'ld4l/open_annotation_rdf/version'
 
 module LD4L
