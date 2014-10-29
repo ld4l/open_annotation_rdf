@@ -32,8 +32,6 @@ module LD4L
 
     # autoload classes
     autoload :Configuration,         'ld4l/open_annotation_rdf/configuration'
-    autoload :Person,                'ld4l/open_annotation_rdf/person'
-    autoload :ResourceExtension,     'ld4l/open_annotation_rdf/resource_extension'
     autoload :Annotation,            'ld4l/open_annotation_rdf/annotation'
     autoload :CommentAnnotation,     'ld4l/open_annotation_rdf/comment_annotation'
     autoload :CommentBody,           'ld4l/open_annotation_rdf/comment_body'

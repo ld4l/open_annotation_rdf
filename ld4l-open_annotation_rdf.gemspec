@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{LD4L Open Annotation RDF provides tools for modeling a annotations based on the Open Annotation ontology and persisting to a triplestore.}
   spec.homepage      = "https://github.com/ld4l/open_annotation_rdf"
   spec.license       = "APACHE2"
-  spec.required_ruby_version     = '>= 1.9.3'
+  spec.required_ruby_version     = '>= 2.1.2'
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
@@ -22,7 +22,12 @@ Gem::Specification.new do |spec|
 
 #  spec.add_dependency('ffi', '~> 1.9.5')
   spec.add_dependency('rdf', '~> 1.1')
-  spec.add_dependency('active-triples', '~> 0.2')
+
+# GETTING FROM GEMFILE UNTIL MintLocalName CODE IS PUSHED INTO MASTER
+#  spec.add_dependency('active-triples', '~> 0.2')
+
+# GETTING FROM GEMFILE UNTIL ld4l-foaf_rdf GEM IS RELEASED
+# spec.add_dependency('ld4l-foaf_rdf', '~> 0.0')
 
   spec.add_development_dependency('rdoc')
   spec.add_development_dependency('rspec')

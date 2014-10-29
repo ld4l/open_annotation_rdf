@@ -5,11 +5,13 @@ module LD4L
 
       configure :type => RDFVocabularies::OA.SemanticTag, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
 
-      # def initialize
-      #   self.motivated_by = RDFVocabularies::OA.tagging  # TODO How to set a default value for motivated_by?
-      # end
+      def initialize(*args)
+        super(*args)
+        m = get_values(:motivatedBy)
+        set_value(:motivatedBy, RDFVocabularies::OA.tagging) unless m.kind_of?(Array) && m.size > 0
+      end
     end
-end
+  end
 end
 
 

@@ -18,7 +18,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
 
     it "should append to base URI when setting to non-URI subject" do
       subject.set_subject! '123'
-      expect(subject.rdf_subject).to eq RDF::URI("#{LD4L::OpenAnnotationRDF::SemanticTagAnnotation.base_uri}#{LD4L::OpenAnnotationRDF::SemanticTagAnnotation.id_prefix}123")
+      expect(subject.rdf_subject).to eq RDF::URI("#{LD4L::OpenAnnotationRDF::SemanticTagAnnotation.base_uri}123")
     end
 
     describe 'when changing subject' do
@@ -107,14 +107,14 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
     end
 
     it "should be settable" do
-      a_person = LD4L::OpenAnnotationRDF::Person.new('1')
+      a_person = LD4L::FoafRDF::Person.new('1')
       subject.annotatedBy = a_person
       expect(subject.annotatedBy.first).to eq a_person
     end
 
     it "should be changeable" do
-      orig_person = LD4L::OpenAnnotationRDF::Person.new('1')
-      new_person = LD4L::OpenAnnotationRDF::Person.new('2')
+      orig_person = LD4L::FoafRDF::Person.new('1')
+      new_person = LD4L::FoafRDF::Person.new('2')
       subject.annotatedBy = orig_person
       subject.annotatedBy = new_person
       expect(subject.annotatedBy.first).to eq new_person
@@ -143,18 +143,18 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
 
   describe 'motivatedBy' do
     it "should be OA.tagging if we haven't set it" do
-      expect(subject.motivatedBy.first.rdf_subject).to RDFVocabularies::OA.tagging
+      expect(subject.motivatedBy.first.rdf_subject.to_s).to eq RDFVocabularies::OA.tagging
     end
 
     it "should be settable" do
       subject.motivatedBy = RDFVocabularies::OA.describing
-      expect(subject.motivatedBy.first.rdf_subject).to eq RDFVocabularies::OA.describing
+      expect(subject.motivatedBy.first.rdf_subject.to_s).to eq RDFVocabularies::OA.describing
     end
 
     it "should be changeable" do
       subject.motivatedBy = RDFVocabularies::OA.describing
       subject.motivatedBy = RDFVocabularies::OA.classifying
-      expect(subject.motivatedBy.first.rdf_subject).to eq RDFVocabularies::OA.classifying
+      expect(subject.motivatedBy.first.rdf_subject.to_s).to eq RDFVocabularies::OA.classifying
     end
   end
 
@@ -251,7 +251,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
       subject << RDF::Statement(RDF::DC.LicenseDocument, RDF::DC.title, 'LICENSE')
     end
 
-    subject { LD4L::OpenAnnotationRDF::Person.new('456')}
+    subject { LD4L::FoafRDF::Person.new('456')}
 
     it 'should return true' do
       expect(subject.destroy!).to be true
@@ -294,7 +294,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
 
     subject {LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new("123")}
 
-    let(:annotatedBy) { LD4L::OpenAnnotationRDF::Person.new('456') }
+    let(:annotatedBy) { LD4L::FoafRDF::Person.new('456') }
 
     it 'should return an attributes hash' do
       expect(subject.attributes).to be_a Hash
@@ -355,18 +355,18 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
 
   describe 'child nodes' do
     it 'should return an object of the correct class when the value is built from the base URI' do
-      subject.annotatedBy = LD4L::OpenAnnotationRDF::Person.new('456')
-      expect(subject.annotatedBy.first).to be_kind_of LD4L::OpenAnnotationRDF::Person
+      subject.annotatedBy = LD4L::FoafRDF::Person.new('456')
+      expect(subject.annotatedBy.first).to be_kind_of LD4L::FoafRDF::Person
     end
 
-    it 'should return an object with the correct URI created with a URI' do
-      subject.annotatedBy = LD4L::OpenAnnotationRDF::Person.new("http://vivo.cornell.edu/individual/JohnSmith")
+    it 'should return an object with the correct URI when created with a URI' do
+      subject.annotatedBy = LD4L::FoafRDF::Person.new("http://vivo.cornell.edu/individual/JohnSmith")
       expect(subject.annotatedBy.first.rdf_subject).to eq RDF::URI("http://vivo.cornell.edu/individual/JohnSmith")
     end
 
     it 'should return an object of the correct class when the value is a bnode' do
-      subject.annotatedBy = LD4L::OpenAnnotationRDF::Person.new
-      expect(subject.annotatedBy.first).to be_kind_of LD4L::OpenAnnotationRDF::Person
+      subject.annotatedBy = LD4L::FoafRDF::Person.new
+      expect(subject.annotatedBy.first).to be_kind_of LD4L::FoafRDF::Person
     end
   end
 
@@ -395,7 +395,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
     end
 
     it 'should return the default label as URI when no title property exists' do
-      expect(subject.rdf_label).to eq [RDF::URI("#{LD4L::OpenAnnotationRDF::SemanticTagAnnotation.base_uri}#{LD4L::OpenAnnotationRDF::SemanticTagAnnotation.id_prefix}123")]
+      expect(subject.rdf_label).to eq [RDF::URI("#{LD4L::OpenAnnotationRDF::SemanticTagAnnotation.base_uri}123")]
     end
 
     it 'should prioritize configured label values' do
@@ -424,9 +424,9 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
     end
 
     it 'should delete properties when statements are removed' do
-      subject << RDF::Statement.new(subject.rdf_subject, RDFVocabularies::OA.motivatedBy, 'commenting')
-      subject.delete RDF::Statement.new(subject.rdf_subject, RDFVocabularies::OA.motivatedBy, 'commenting')
-      expect(subject.motivatedBy).to eq []
+      subject << RDF::Statement.new(subject.rdf_subject, RDFVocabularies::OA.annotatedBy, 'John Smith')
+      subject.delete RDF::Statement.new(subject.rdf_subject, RDFVocabularies::OA.annotatedBy, 'John Smith')
+      expect(subject.annotatedBy).to eq []
     end
   end
 

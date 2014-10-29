@@ -3,9 +3,11 @@ module LD4L
     class CommentAnnotation < LD4L::OpenAnnotationRDF::Annotation
       @id_prefix="cm"
 
-      # def initialize
-      #   self.motivated_by = RDFVocabularies::OA.commenting  # TODO How to set a default value for motivated_by?
-      # end
+      def initialize(*args)
+        super(*args)
+        m = get_values(:motivatedBy)
+        set_value(:motivatedBy, RDFVocabularies::OA.commenting) unless m.kind_of?(Array) && m.size > 0
+      end
     end
   end
 end

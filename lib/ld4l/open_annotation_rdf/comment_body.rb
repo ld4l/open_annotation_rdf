@@ -3,7 +3,7 @@ require 'rdf'
 
 module LD4L
   module OpenAnnotationRDF
-    class CommentBody < LD4L::OpenAnnotationRDF::ResourceExtension
+    class CommentBody < ActiveTriples::Resource
 
       @id_prefix="cb"
 
