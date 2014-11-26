@@ -33,9 +33,7 @@ code will work in a usable way outside of its use in LD4L Use Cases.
 
 *Setup required for all examples.*
 ```
-require 'active_triples'
 require 'ld4l/open_annotation_rdf'
-require 'ld4l/foaf_rdf'
 
 # create an in-memory repository
 ActiveTriples::Repositories.add_repository :default, RDF::Repository.new
