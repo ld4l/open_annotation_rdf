@@ -134,12 +134,19 @@ puts stb.dump :ttl
 
 *Example usage using configured base_uri and default localname_minter.*
 ```
+LD4L::OpenAnnotationRDF.reset
 LD4L::OpenAnnotationRDF.configure do |config|
   config.base_uri = "http://example.org/"
 end
 
 ca = LD4L::OpenAnnotationRDF::CommentAnnotation.new(ActiveTriples::LocalName::Minter.generate_local_name(
               LD4L::OpenAnnotationRDF::CommentAnnotation, 10, {:prefix=>'ca'} ))
+
+puts ca.dump :ttl
+
+ca = LD4L::OpenAnnotationRDF::CommentAnnotation.new(ActiveTriples::LocalName::Minter.generate_local_name(
+              LD4L::OpenAnnotationRDF::CommentAnnotation, 10, {:prefix=>'ca'},
+              &LD4L::OpenAnnotationRDF.configuration.localname_minter ))
 
 puts ca.dump :ttl
 ```
