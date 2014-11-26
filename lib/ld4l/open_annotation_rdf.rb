@@ -36,7 +36,9 @@ module LD4L
     autoload :CommentAnnotation,     'ld4l/open_annotation_rdf/comment_annotation'
     autoload :CommentBody,           'ld4l/open_annotation_rdf/comment_body'
     autoload :TagAnnotation,         'ld4l/open_annotation_rdf/tag_annotation'
+    autoload :TagBody,               'ld4l/open_annotation_rdf/tag_body'
     autoload :SemanticTagAnnotation, 'ld4l/open_annotation_rdf/semantic_tag_annotation'
+    autoload :SemanticTagBody,       'ld4l/open_annotation_rdf/semantic_tag_body'
 
     def self.class_from_string(class_name, container_class=Kernel)
       container_class = container_class.name if container_class.is_a? Module

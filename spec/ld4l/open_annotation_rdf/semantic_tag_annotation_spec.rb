@@ -59,8 +59,8 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
   # -------------------------------------------------
 
   describe 'type' do
-    it "should be an RDFVocabularies::OA.SemanticTag" do
-      expect(subject.type.first.value).to eq RDFVocabularies::OA.SemanticTag.value
+    it "should be an RDFVocabularies::OA.Annotation" do
+      expect(subject.type.first.value).to eq RDFVocabularies::OA.Annotation.value
     end
   end
 
@@ -82,22 +82,64 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
   end
 
   describe 'hasBody' do
+    # NOTE: Preferred method to set body is to use setTerm method which will
+    #       create the appropriate annotation body object and triples.
     it "should be empty array if we haven't set it" do
       expect(subject.hasBody).to match_array([])
     end
 
     it "should be settable" do
-      a_open_annotation_body = LD4L::OpenAnnotationRDF::CommentBody.new('1')
-      subject.hasBody = a_open_annotation_body
-      expect(subject.hasBody.first).to eq a_open_annotation_body
+      subject.hasBody = RDF::URI("http://example.org/cv/term/t123")
+      expect(subject.hasBody.first.rdf_subject.to_s).to eq "http://example.org/cv/term/t123"
     end
 
     it "should be changeable" do
-      orig_open_annotation_body = LD4L::OpenAnnotationRDF::CommentBody.new('1')
-      new_open_annotation_body = LD4L::OpenAnnotationRDF::CommentBody.new('2')
-      subject.hasBody = orig_open_annotation_body
-      subject.hasBody = new_open_annotation_body
-      expect(subject.hasBody.first).to eq new_open_annotation_body
+      subject.hasBody = RDF::URI("http://example.org/cv/term/t123")
+      subject.hasBody = RDF::URI("http://example.org/cv/term/t123_NEW")
+      expect(subject.hasBody.first.rdf_subject.to_s).to eq "http://example.org/cv/term/t123_NEW"
+    end
+  end
+
+  describe '#setTerm' do
+    before do
+      @repo = RDF::Repository.new
+      allow(subject.class).to receive(:repository).and_return(nil)
+      allow(subject).to receive(:repository).and_return(@repo)
+    end
+    context "when term doesn't already exist as a SemanticTagBody" do
+      before do
+        stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/new_term')
+        expect(stb).not_to be_persisted
+      end
+      it "should create an instance of LD4L::OpenAnnotationRDF::SemanticTagBody and set hasBody property to term URI" do
+        subject.setTerm('http://example.org/new_term')
+        expect(subject.hasBody.first.rdf_subject).to be_kind_of RDF::URI
+        expect(subject.hasBody.first.rdf_subject.to_s).to eq 'http://example.org/new_term'
+        stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/new_term')
+        expect(stb).not_to be_persisted
+        expect(subject.getBody).to be_kind_of LD4L::OpenAnnotationRDF::SemanticTagBody
+        expect(subject.getBody.rdf_subject.to_s).to eq 'http://example.org/new_term'
+        expect(subject.getBody).not_to be_persisted
+      end
+    end
+
+    context "when term already exists as a SemanticTagBody" do
+      before do
+        stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/existing_term')
+        stb.persist!
+        expect(stb).to be_persisted
+      end
+      it "should resume the existing LD4L::OpenAnnotationRDF::SemanticTagBody and set hasBody property to it" do
+        subject.setTerm('http://example.org/existing_term')
+        stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/existing_term')
+        expect(stb).to be_persisted
+        expect(subject.hasBody.first.rdf_subject).to be_kind_of RDF::URI
+        expect(subject.hasBody.first.rdf_subject.to_s).to eq 'http://example.org/existing_term'
+        expect(subject.getBody).to be_kind_of LD4L::OpenAnnotationRDF::SemanticTagBody
+        expect(subject.getBody.rdf_subject.to_s).to eq 'http://example.org/existing_term'
+        # NOTE: body is considered not persisted because it's parent, the annotation, is not persisted
+        expect(subject.getBody).to be_persisted
+      end
     end
   end
 
@@ -242,6 +284,20 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
           expect(subject.annotatedAt).to eq []
           expect(@repo.statements.to_a.length).to eq 1 # Only the type statement
         end
+
+        context "when body is set" do
+          before do
+            subject.setTerm('http://example.org/new_term2')
+            subject.persist!
+          end
+          it "should persist body to the repository" do
+            stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new(subject.getBody.rdf_subject)
+            expect(stb).to be_persisted
+            stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/new_term2')
+            expect(stb).to be_persisted
+            expect(subject.getBody.rdf_subject.to_s).to eq 'http://example.org/new_term2'
+          end
+        end
       end
     end
   end
@@ -251,7 +307,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
       subject << RDF::Statement(RDF::DC.LicenseDocument, RDF::DC.title, 'LICENSE')
     end
 
-    subject { LD4L::FoafRDF::Person.new('456')}
+    subject { LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('123') }
 
     it 'should return true' do
       expect(subject.destroy!).to be true
@@ -265,22 +321,46 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
 
     context 'with a parent' do
       before do
-        parent.annotatedBy = subject
+        subject.annotatedBy = child
       end
 
-      let(:parent) do
-        LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('123')
+      let(:child) do
+        LD4L::FoafRDF::Person.new('456')
       end
 
       it 'should empty the graph and remove it from the parent' do
-        subject.destroy
-        expect(parent.annotatedBy).to be_empty
+        child.destroy
+        expect(subject.annotatedBy).to be_empty
       end
 
       it 'should remove its whole graph from the parent' do
-        subject.destroy
-        subject.each_statement do |s|
-          expect(parent.statements).not_to include s
+        child.destroy
+        child.each_statement do |s|
+          expect(subject.statements).not_to include s
+        end
+      end
+    end
+
+    context 'with annotation body' do
+      before do
+        subject.setTerm('http://example.org/new_term3')
+      end
+
+      context 'and body is set on the annotation' do
+        let(:child) do
+          subject.getBody
+        end
+
+        it 'should empty the graph and remove it from the parent' do
+          child.destroy
+          expect(subject.hasBody).to be_empty
+        end
+
+        it 'should remove its whole graph from the parent' do
+          child.destroy
+          child.each_statement do |s|
+            expect(subject.statements).not_to include s
+          end
         end
       end
     end
@@ -434,7 +514,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
     before do
       class DummyPerson < ActiveTriples::Resource
         configure :type => RDF::URI('http://example.org/Person')
-        property :name, :predicate => RDF::FOAF.name
+        property :foafname, :predicate => RDF::FOAF.name
         property :publications, :predicate => RDF::FOAF.publications, :class_name => 'DummyDocument'
         property :knows, :predicate => RDF::FOAF.knows, :class_name => DummyPerson
       end
@@ -464,13 +544,13 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
 
     let (:person1) do
       p = DummyPerson.new
-      p.name = 'Alice'
+      p.foafname = 'Alice'
       p
     end
 
     let (:person2) do
       p = DummyPerson.new
-      p.name = 'Bob'
+      p.foafname = 'Bob'
       p
     end
 
@@ -499,7 +579,7 @@ END
       document2.creator = person1
       person1.knows = person2
       subject.item = [document1]
-      expect(subject.item.first.creator.first.knows.first.name).to eq ['Bob']
+      expect(subject.item.first.creator.first.knows.first.foafname).to eq ['Bob']
     end
   end
 end

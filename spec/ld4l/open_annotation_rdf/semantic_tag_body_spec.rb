@@ -3,9 +3,9 @@ require 'ld4l/open_annotation_rdf/vocab/dctypes'
 require 'ld4l/open_annotation_rdf/vocab/oa'
 
 
-describe 'LD4L::OpenAnnotationRDF::CommentBody' do
+describe 'LD4L::OpenAnnotationRDF::SemanticTagBody' do
 
-  subject { LD4L::OpenAnnotationRDF::CommentBody.new }
+  subject { LD4L::OpenAnnotationRDF::SemanticTagBody.new }
 
   describe 'rdf_subject' do
     it "should be a blank node if we haven't set it" do
@@ -19,7 +19,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
 
     it "should append to base URI when setting to non-URI subject" do
       subject.set_subject! '123'
-      expect(subject.rdf_subject).to eq RDF::URI("#{LD4L::OpenAnnotationRDF::CommentBody.base_uri}123")
+      expect(subject.rdf_subject).to eq RDF::URI("#{LD4L::OpenAnnotationRDF::SemanticTagBody.base_uri}123")
     end
 
     describe 'when changing subject' do
@@ -61,82 +61,8 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
 
   describe 'type' do
     it "should be set to text and astext from new" do
-      expect(subject.type.size).to eq 2
-      expect(subject.type).to include RDFVocabularies::DCTYPES.Text
-      expect(subject.type).to include RDFVocabularies::CNT.AsText
-    end
-
-    it "should be settable" do
-      subject.type = RDFVocabularies::DCTYPES.Text
       expect(subject.type.size).to eq 1
-      expect(subject.type.first).to eq RDFVocabularies::DCTYPES.Text
-    end
-
-    it "should be settable to multiple values" do
-      t = [RDFVocabularies::DCTYPES.Text, RDFVocabularies::CNT.AsText]
-      subject.set_value(:type,t)
-      expect(subject.type.size).to eq 2
-      expect(subject.type).to include RDFVocabularies::DCTYPES.Text
-      expect(subject.type).to include RDFVocabularies::CNT.AsText
-    end
-
-    it "should be changeable" do
-      subject.type = RDFVocabularies::DCTYPES.Text
-      subject.type = RDFVocabularies::CNT.AsText
-      expect(subject.type.size).to eq 1
-      expect(subject.type.first).to eq RDFVocabularies::CNT.AsText
-    end
-
-    it "should be changeable for multiple values" do
-      t = [RDFVocabularies::DCTYPES.Text, RDFVocabularies::CNT.AsText]
-      subject.set_value(:type,t)
-      expect(subject.type.size).to eq 2
-      expect(subject.type).to include RDFVocabularies::DCTYPES.Text
-      expect(subject.type).to include RDFVocabularies::CNT.AsText
-      t = subject.get_values(:type)
-      t[0] = RDFVocabularies::OA.Tag           # dummy type for testing
-      t[1] = RDFVocabularies::OA.SemanticTag   # dummy type for testing
-      subject.set_value(:type,t)
-      expect(subject.type.size).to eq 2
-      expect(subject.type).to include RDFVocabularies::OA.Tag
       expect(subject.type).to include RDFVocabularies::OA.SemanticTag
-    end
-  end
-
-  describe 'content' do
-    it "should be empty array if we haven't set it" do
-      expect(subject.content).to match_array([])
-    end
-
-    it "should be settable" do
-      subject.content = "bla"
-      expect(subject.content).to eq ["bla"]
-    end
-
-    it "should be changeable" do
-      subject.content = "bla"
-      subject.content = "new bla"
-      expect(subject.content).to eq ["new bla"]
-    end
-  end
-
-  describe 'format' do
-    it "should be empty array if we haven't set it" do
-      expect(subject.format).to match_array([])
-    end
-
-    it "should be settable" do
-      a_format = RDFVocabularies::CNT.chars
-      subject.format = a_format
-      expect(subject.format.first.rdf_subject).to eq a_format
-    end
-
-    it "should be changeable" do
-      orig_format = RDFVocabularies::CNT.chars
-      new_format  = RDFVocabularies::DCTYPES.text
-      subject.format = orig_format
-      subject.format = new_format
-      expect(subject.format.first.rdf_subject).to eq  new_format
     end
   end
 
@@ -161,7 +87,6 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
 
       context "when it is saved" do
         before do
-          subject.content = "bla"
           subject.persist!
         end
 
@@ -169,22 +94,9 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
           expect(subject).to be_persisted
         end
 
-        context "and then modified" do
-          before do
-            subject.content = "newbla"
-          end
-
-          it "should return true" do
-            expect(subject).to be_persisted
-          end
-        end
         context "and then reloaded" do
           before do
             subject.reload
-          end
-
-          it "should reset the content" do
-            expect(subject.content).to eq ["bla"]
           end
 
           it "should be persisted" do
@@ -199,14 +111,13 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
     context "when the repository is set" do
       context "and the item is not a blank node" do
 
-        subject {LD4L::OpenAnnotationRDF::CommentBody.new("123")}
+        subject {LD4L::OpenAnnotationRDF::SemanticTagBody.new("123")}
 
         before do
           # Create inmemory repository
           @repo = RDF::Repository.new
           allow(subject.class).to receive(:repository).and_return(nil)
           allow(subject).to receive(:repository).and_return(@repo)
-          subject.content = "bla"
           subject.persist!
         end
 
@@ -216,13 +127,9 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
 
         it "should delete from the repository" do
           subject.reload
-          expect(subject.content).to eq ["bla"]
-          subject.content = []
-          expect(subject.content).to eq []
           subject.persist!
           subject.reload
-          expect(subject.content).to eq []
-          expect(@repo.statements.to_a.length).to eq 2 # Only the 2 type statements
+          expect(@repo.statements.to_a.length).to eq 1 # Only the 1 type statements
         end
       end
     end
@@ -233,7 +140,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
       subject << RDF::Statement(RDF::DC.LicenseDocument, RDF::DC.title, 'LICENSE')
     end
 
-    subject { LD4L::OpenAnnotationRDF::CommentBody.new('456')}
+    subject { LD4L::OpenAnnotationRDF::SemanticTagBody.new('456')}
 
     it 'should return true' do
       expect(subject.destroy!).to be true
@@ -247,14 +154,14 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
   end
 
   describe '#rdf_label' do
-    subject {LD4L::OpenAnnotationRDF::CommentBody.new("123")}
+    subject {LD4L::OpenAnnotationRDF::SemanticTagBody.new("123")}
 
     it 'should return an array of label values' do
       expect(subject.rdf_label).to be_kind_of Array
     end
 
     it 'should return the default label as URI when no title property exists' do
-      expect(subject.rdf_label).to eq [RDF::URI("#{LD4L::OpenAnnotationRDF::CommentBody.base_uri}123")]
+      expect(subject.rdf_label).to eq [RDF::URI("#{LD4L::OpenAnnotationRDF::SemanticTagBody.base_uri}123")]
     end
 
     it 'should prioritize configured label values' do
@@ -276,19 +183,6 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
     end
   end
 
-  describe 'editing the graph' do
-    it 'should write properties when statements are added' do
-      subject << RDF::Statement.new(subject.rdf_subject, RDFVocabularies::CNT.chars, 'Great book!')
-      expect(subject.content).to include 'Great book!'
-    end
-
-    it 'should delete properties when statements are removed' do
-      subject << RDF::Statement.new(subject.rdf_subject, RDFVocabularies::CNT.chars, 'Great book!')
-      subject.delete RDF::Statement.new(subject.rdf_subject, RDFVocabularies::CNT.chars, 'Great book!')
-      expect(subject.content).to eq []
-    end
-  end
-
   describe 'big complex graphs' do
     before do
       class DummyPerson < ActiveTriples::Resource
@@ -304,10 +198,10 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
         property :creator, :predicate => RDF::DC.creator, :class_name => 'DummyPerson'
       end
 
-      LD4L::OpenAnnotationRDF::CommentBody.property :item, :predicate => RDF::DC.relation, :class_name => DummyDocument
+      LD4L::OpenAnnotationRDF::SemanticTagBody.property :item, :predicate => RDF::DC.relation, :class_name => DummyDocument
     end
 
-    subject { LD4L::OpenAnnotationRDF::CommentBody.new }
+    subject { LD4L::OpenAnnotationRDF::SemanticTagBody.new }
 
     let (:document1) do
       d = DummyDocument.new

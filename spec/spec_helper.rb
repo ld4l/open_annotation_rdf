@@ -2,7 +2,10 @@ require 'bundler/setup'
 Bundler.setup
 
 require 'active_triples'
+require 'active_triples/local_name'
 require 'ld4l/open_annotation_rdf'
+
+require 'pry'
 
 Dir['./spec/support/**/*.rb'].each { |f| require f }
 

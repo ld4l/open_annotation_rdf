@@ -21,6 +21,8 @@ Or install it yourself as:
 **Caveat:** This gem is part of the LD4L Project and is being used in that context.  There is no guarantee that the 
 code will work in a usable way outside of its use in LD4L Use Cases.
 
+### Examples
+
 ### Models
 
 The LD4L::OpenAnnotationRDF gem provides model definitions using the 
@@ -28,11 +30,13 @@ The LD4L::OpenAnnotationRDF gem provides model definitions using the
 [ruby-rdf/rdf](https://github.com/ruby-rdf/rdf).  The following models are provided:
 
 1. LD4L::OpenAnnotationRDF::Annotation - Implements an open annotation.
-  a. Target and Body metadata
 1. LD4L::OpenAnnotationRDF::CommentAnnotation - Extends Annotation to implement a comment annotation of free-form text.
-1. LD4L::OpenAnnotationRDF::CommentBody - Extends Annotation to implement the body of a comment annotation holding the free-form text.
+1. LD4L::OpenAnnotationRDF::CommentBody - Implements a body holding free-form text.
 1. LD4L::OpenAnnotationRDF::TagAnnotation - Extends Annotation to implement a tag annotation of user specified short phrase tag.
+1. LD4L::OpenAnnotationRDF::TagBody - Implements a body holding the short phrase tag.
 1. LD4L::OpenAnnotationRDF::SemanticTagAnnotation - Extends Annotation to implement a semantic tag annotation with values limited to a controlled vocabulary.
+1. LD4L::OpenAnnotationRDF::SemanticTagBody - Implements a body with rdf_subject equal to the URI of the controlled vocabulary term
+.
 
 ### Ontologies
 

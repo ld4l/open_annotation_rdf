@@ -80,6 +80,8 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
   end
 
   describe 'hasBody' do
+    # NOTE: Preferred method to set body is to use setComment method which will
+    #       create the appropriate annotation body object and triples.
     it "should be empty array if we haven't set it" do
       expect(subject.hasBody).to match_array([])
     end
@@ -96,6 +98,17 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       subject.hasBody = orig_open_annotation_body
       subject.hasBody = new_open_annotation_body
       expect(subject.hasBody.first).to eq new_open_annotation_body
+    end
+  end
+
+  describe '#setComment' do
+    it "should create an instance of LD4L::OpenAnnotationRDF::CommentBody and set hasBody property to comment URI" do
+      subject.setComment('I like this.')
+      expect(subject.hasBody.first.rdf_subject).to be_kind_of RDF::URI
+      expect(subject.hasBody.first.rdf_subject.to_s).to match match /http:\/\/localhost\/[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/
+      expect(subject.getBody).to be_kind_of LD4L::OpenAnnotationRDF::CommentBody
+      expect(subject.getBody.rdf_subject.to_s).to match match /http:\/\/localhost\/[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/
+      expect(subject.getBody).not_to be_persisted
     end
   end
 
@@ -240,6 +253,18 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
           expect(subject.annotatedAt).to eq []
           expect(@repo.statements.to_a.length).to eq 1 # Only the type statement
         end
+
+        context "when body is set" do
+          before do
+            subject.setComment('I like this.')
+            subject.persist!
+          end
+          it "should persist body to the repository" do
+            cb = LD4L::OpenAnnotationRDF::CommentBody.new(subject.getBody.rdf_subject)
+            expect(cb).to be_persisted
+            expect(subject.getBody.rdf_subject.to_s).to eq cb.rdf_subject.to_s
+          end
+        end
       end
     end
   end
@@ -249,7 +274,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       subject << RDF::Statement(RDF::DC.LicenseDocument, RDF::DC.title, 'LICENSE')
     end
 
-    subject { LD4L::FoafRDF::Person.new('456')}
+    subject { LD4L::OpenAnnotationRDF::CommentAnnotation.new('123') }
 
     it 'should return true' do
       expect(subject.destroy!).to be true
@@ -263,22 +288,46 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
 
     context 'with a parent' do
       before do
-        parent.annotatedBy = subject
+        subject.annotatedBy = child
       end
 
-      let(:parent) do
-        LD4L::OpenAnnotationRDF::CommentAnnotation.new('123')
+      let(:child) do
+        LD4L::FoafRDF::Person.new('456')
       end
 
       it 'should empty the graph and remove it from the parent' do
-        subject.destroy
-        expect(parent.annotatedBy).to be_empty
+        child.destroy
+        expect(subject.annotatedBy).to be_empty
       end
 
       it 'should remove its whole graph from the parent' do
-        subject.destroy
-        subject.each_statement do |s|
-          expect(parent.statements).not_to include s
+        child.destroy
+        child.each_statement do |s|
+          expect(subject.statements).not_to include s
+        end
+      end
+    end
+
+    context 'with annotation body' do
+      before do
+        subject.setComment('I like this.')
+      end
+
+      context 'and body is set on the annotation' do
+        let(:child) do
+          subject.getBody
+        end
+
+        it 'should empty the graph and remove it from the parent' do
+          child.destroy
+          expect(subject.hasBody).to be_empty
+        end
+
+        it 'should remove its whole graph from the parent' do
+          child.destroy
+          child.each_statement do |s|
+            expect(subject.statements).not_to include s
+          end
         end
       end
     end
@@ -310,6 +359,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       before do
         subject << RDF::Statement(subject.rdf_subject, RDF::DC.contributor, 'Tove Jansson')
         subject << RDF::Statement(subject.rdf_subject, RDF::DC.relation, RDF::URI('http://example.org/moomi'))
+# binding.pry
         node = RDF::Node.new
         subject << RDF::Statement(RDF::URI('http://example.org/moomi'), RDF::DC.relation, node)
         subject << RDF::Statement(node, RDF::DC.title, 'bnode')
@@ -320,6 +370,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       end
 
       it 'should return generic Resources' do
+# binding.pry
         expect(subject.attributes[RDF::DC.relation.to_s].first).to be_a ActiveTriples::Resource
       end
 
@@ -432,7 +483,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
     before do
       class DummyPerson < ActiveTriples::Resource
         configure :type => RDF::URI('http://example.org/Person')
-        property :name, :predicate => RDF::FOAF.name
+        property :foafname, :predicate => RDF::FOAF.name
         property :publications, :predicate => RDF::FOAF.publications, :class_name => 'DummyDocument'
         property :knows, :predicate => RDF::FOAF.knows, :class_name => DummyPerson
       end
@@ -462,13 +513,13 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
 
     let (:person1) do
       p = DummyPerson.new
-      p.name = 'Alice'
+      p.foafname = 'Alice'
       p
     end
 
     let (:person2) do
       p = DummyPerson.new
-      p.name = 'Bob'
+      p.foafname = 'Bob'
       p
     end
 
@@ -497,7 +548,7 @@ END
       document2.creator = person1
       person1.knows = person2
       subject.item = [document1]
-      expect(subject.item.first.creator.first.knows.first.name).to eq ['Bob']
+      expect(subject.item.first.creator.first.knows.first.foafname).to eq ['Bob']
     end
   end
 end
