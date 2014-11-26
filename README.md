@@ -4,17 +4,24 @@ LD4L Open Annotation RDF provides tools for modeling annotations based on the Op
 
 ## Installation
 
+
+Temporary get the gem from github until the gem is released publicly.
+
 Add this line to your application's Gemfile:
 
-    gem 'ld4l-open_annotation_rdf'
+<!--    gem 'ld4l-open_annotation_rdf' -->
+    gem 'ld4l-open_annotation_rdf', '~> 0.0.3', :git => 'git@github.com:ld4l/open_annotation_rdf.git'
+    
 
 And then execute:
 
     $ bundle install
 
+<!--
 Or install it yourself as:
 
     $ gem install ld4l-open_annotation_rdf
+-->
 
 ## Usage
 
