@@ -23,7 +23,7 @@ module LD4L
               ActiveTriples::LocalName::Minter.generate_local_name(
                   LD4L::OpenAnnotationRDF::TagBody, 10, @id_prefix,
                   LD4L::OpenAnnotationRDF.configuration.localname_minter ))
-          @body.tag = 'foo'
+          @body.tag = tag
         end
         set_value(:hasBody, @body)
         @body
