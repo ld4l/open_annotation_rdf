@@ -6,7 +6,9 @@ module LD4L
   module OpenAnnotationRDF
     class Annotation < ActiveTriples::Resource
 
-      @id_prefix="oa"
+      class << self; attr_reader :localname_prefix end
+      @localname_prefix="oa"
+
       @body = nil
 
       configure :type => RDFVocabularies::OA.Annotation,
@@ -18,7 +20,6 @@ module LD4L
       property :annotatedBy, :predicate => RDFVocabularies::OA.annotatedBy, :class_name => LD4L::FoafRDF::Person
       property :annotatedAt, :predicate => RDFVocabularies::OA.annotatedAt  # :type => xsd:dateTime    # the time Annotation was created
       property :motivatedBy, :predicate => RDFVocabularies::OA.motivatedBy  # comes from RDFVocabularies::OA ontology
-
 
       ##
       # Get the <tt>ActiveTriples::Resource</tt> instance holding the body of this annotation.

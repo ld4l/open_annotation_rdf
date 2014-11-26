@@ -3,7 +3,8 @@ require 'active_triples/local_name'
 module LD4L
   module OpenAnnotationRDF
     class CommentAnnotation < LD4L::OpenAnnotationRDF::Annotation
-      @id_prefix="cm"
+
+      @localname_prefix="ca"
 
       property :hasBody, :predicate => RDFVocabularies::OA.hasBody, :class_name => LD4L::OpenAnnotationRDF::CommentBody
 
@@ -17,7 +18,7 @@ module LD4L
       def setComment(comment)
         @body = LD4L::OpenAnnotationRDF::CommentBody.new(
             ActiveTriples::LocalName::Minter.generate_local_name(
-                LD4L::OpenAnnotationRDF::CommentBody, 10, @id_prefix,
+                LD4L::OpenAnnotationRDF::CommentBody, 10, @localname_prefix,
                 LD4L::OpenAnnotationRDF.configuration.localname_minter ))
         @body.content = comment
         @body.format  = "text/plain"

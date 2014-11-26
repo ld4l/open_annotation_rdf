@@ -2,8 +2,8 @@
 
 LD4L Open Annotation RDF provides tools for modeling annotations based on the Open Annotation ontology and persisting to a triplestore.
 
-## Installation
 
+## Installation
 
 Temporary get the gem from github until the gem is released publicly.
 
@@ -23,6 +23,7 @@ Or install it yourself as:
     $ gem install ld4l-open_annotation_rdf
 -->
 
+
 ## Usage
 
 **Caveat:** This gem is part of the LD4L Project and is being used in that context.  There is no guarantee that the 
@@ -30,7 +31,7 @@ code will work in a usable way outside of its use in LD4L Use Cases.
 
 ### Examples
 
-Setup required for all examples.
+*Setup required for all examples.*
 ```
 require 'active_triples'
 require 'ld4l/open_annotation_rdf'
@@ -42,7 +43,7 @@ ActiveTriples::Repositories.add_repository :default, RDF::Repository.new
 p = LD4L::FoafRDF::Person.new('p4')
 ```
 
-Example creating a comment annotation.
+*Example creating a comment annotation.*
 ```
 ca = LD4L::OpenAnnotationRDF::CommentAnnotation.new('c10')
 ca.hasTarget = RDF::URI("http://example.org/bibref/br3")
@@ -55,7 +56,7 @@ puts ca.dump :ttl
 puts cb.dump :ttl
 ```
 
-Example triples created for a comment annotation.
+*Example triples created for a comment annotation.*
 ```
 <http://localhost/c10> a <http://www.w3.org/ns/oa#Annotation>;
    <http://www.w3.org/ns/oa#annotatedAt> "2014-11-26T15:53:49Z";
@@ -70,7 +71,7 @@ Example triples created for a comment annotation.
    <http://www.w3.org/2011/content#chars> "This book is a good resource on archery technique." .
 ```
 
-Example creating a tag annotation.
+*Example creating a tag annotation.*
 ```
 ta = LD4L::OpenAnnotationRDF::TagAnnotation.new('t10')
 ta.hasTarget = RDF::URI("http://example.org/bibref/br3")
@@ -83,7 +84,7 @@ puts ta.dump :ttl
 puts tb.dump :ttl
 ```
 
-Example triples created for a tag annotation.
+*Example triples created for a tag annotation.*
 ```
 <http://localhost/t10> a <http://www.w3.org/ns/oa#Annotation>;
    <http://www.w3.org/ns/oa#annotatedAt> "2014-11-26T15:56:32Z";
@@ -97,7 +98,7 @@ Example triples created for a tag annotation.
    <http://www.w3.org/2011/content#chars> "archery" .
 ```
 
-Example creating a semantic tag annotation.
+*Example creating a semantic tag annotation.*
 ```
 sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('st10')
 sta.hasTarget = RDF::URI("http://example.org/bibref/br3")
@@ -110,7 +111,7 @@ puts sta.dump :ttl
 puts stb.dump :ttl
 ```
 
-Example triples created for a semantic tag annotation.
+*Example triples created for a semantic tag annotation.*
 ```
 <http://localhost/st10> a <http://www.w3.org/ns/oa#Annotation>;
    <http://www.w3.org/ns/oa#annotatedAt> "2014-11-26T15:59:01Z";
@@ -123,10 +124,67 @@ Example triples created for a semantic tag annotation.
 ```
 
 
+### Configurations
+
+* base_uri - base URI used when new resources are created (default="http://localhost/")
+* localname_minter - minter function to use for creating unique local names (default=nil which uses default minter in active_triples-local_name gem)
+
+*Setup for all examples.*
+
+* Restart your interactive session (e.g. irb, pry).
+* Use the Setup for all examples in main Examples section above.
+
+*Example usage using configured base_uri and default localname_minter.*
+```
+LD4L::OpenAnnotationRDF.configure do |config|
+  config.base_uri = "http://example.org/"
+end
+
+ca = LD4L::OpenAnnotationRDF::CommentAnnotation.new(ActiveTriples::LocalName::Minter.generate_local_name(
+              LD4L::OpenAnnotationRDF::CommentAnnotation, 10, {:prefix=>'ca'} ))
+
+puts ca.dump :ttl
+```
+NOTE: If base_uri is not used, you need to restart your interactive environment (e.g. irb, pry).  Once the 
+  CommentAnnotation class is instantiated the first time, the base_uri for the class is set.  If you ran
+  through the main Examples, the base_uri was set to the default base_uri.
+
+
+*Example triples created for a person with configured base_uri and default minter.*
+```
+<http://example.org/ca45c9c85b-25af-4c52-96a4-cf0d8b70a768> a <http://www.w3.org/ns/oa#Annotation>;
+   <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#commenting> .
+```
+
+*Example usage using configured base_uri and configured localname_minter.*
+```
+LD4L::OpenAnnotationRDF.configure do |config|
+  config.base_uri = "http://example.org/"
+  config.localname_minter = lambda { |prefix=""| prefix+'_configured_'+SecureRandom.uuid }
+end
+
+ca = LD4L::OpenAnnotationRDF::CommentAnnotation.new(ActiveTriples::LocalName::Minter.generate_local_name(
+              LD4L::OpenAnnotationRDF::CommentAnnotation, 10, 'ca',
+              &LD4L::OpenAnnotationRDF.configuration.localname_minter ))
+
+puts ca.dump :ttl
+```
+NOTE: If base_uri is not used, you need to restart your interactive environment (e.g. irb, pry).  Once the 
+  CommentAnnotation class is instantiated the first time, the base_uri for the class is set.  If you ran
+  through the main Examples, the base_uri was set to the default base_uri.
+
+
+*Example triples created for a person with configured base_uri and configured minter.*
+```
+<http://example.org/ca_configured_6498ba05-8b21-4e8c-b9d4-a6d5d2180966> a <http://www.w3.org/ns/oa#Annotation>;
+   <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#commenting> .
+```
+
+
 ### Models
 
 The LD4L::OpenAnnotationRDF gem provides model definitions using the 
-[ActiveTriples](https://github.com/no-reply/ActiveTriples) framework extension of 
+[ActiveTriples](https://github.com/ActiveTriples/ActiveTriples) framework extension of 
 [ruby-rdf/rdf](https://github.com/ruby-rdf/rdf).  The following models are provided:
 
 1. LD4L::OpenAnnotationRDF::Annotation - Implements an open annotation.

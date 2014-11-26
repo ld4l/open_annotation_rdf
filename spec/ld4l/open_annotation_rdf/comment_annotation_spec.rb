@@ -169,6 +169,13 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
     end
   end
 
+  describe '#localname_prefix' do
+    it "should return default prefix" do
+      prefix = LD4L::OpenAnnotationRDF::CommentAnnotation.localname_prefix
+      expect(prefix).to eq "ca"
+    end
+  end
+
   # ----------------------------------------------
   # END -- Test attributes specific to this model
   # ----------------------------------------------

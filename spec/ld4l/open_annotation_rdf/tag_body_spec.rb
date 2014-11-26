@@ -94,6 +94,13 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
     end
   end
 
+  describe '#localname_prefix' do
+    it "should return default prefix" do
+      prefix = LD4L::OpenAnnotationRDF::TagBody.localname_prefix
+      expect(prefix).to eq "tb"
+    end
+  end
+
   # -----------------------------------------------
   #  END -- Test attributes specific to this model
   # -----------------------------------------------

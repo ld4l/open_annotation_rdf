@@ -6,7 +6,8 @@ module LD4L
   module OpenAnnotationRDF
     class CommentBody < ActiveTriples::Resource
 
-      @id_prefix="cb"
+      class << self; attr_reader :localname_prefix end
+      @localname_prefix="cb"
 
       configure :type => RDFVocabularies::CNT.AsText,
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
@@ -17,6 +18,7 @@ module LD4L
 
       def initialize(*args)
         super(*args)
+
         t = get_values(:type)
         t << RDFVocabularies::DCTYPES.Text
         set_value(:type,t)

@@ -6,7 +6,8 @@ module LD4L
   module OpenAnnotationRDF
     class TagBody < ActiveTriples::Resource
 
-      @id_prefix="tb"
+      class << self; attr_reader :localname_prefix end
+      @localname_prefix="tb"
 
       configure :type => RDFVocabularies::OA.Tag,
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
@@ -34,6 +35,7 @@ module LD4L
 
       def initialize(*args)
         super(*args)
+
         t = get_values(:type)
         t << RDFVocabularies::CNT.AsText
         set_value(:type,t)

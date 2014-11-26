@@ -200,6 +200,13 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
     end
   end
 
+  describe '#localname_prefix' do
+    it "should return default prefix" do
+      prefix = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.localname_prefix
+      expect(prefix).to eq "sta"
+    end
+  end
+
   # -----------------------------------------------
   #  END -- Test attributes specific to this model
   # -----------------------------------------------

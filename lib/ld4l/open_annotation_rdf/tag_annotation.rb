@@ -3,7 +3,8 @@ require 'active_triples/local_name'
 module LD4L
   module OpenAnnotationRDF
     class TagAnnotation < LD4L::OpenAnnotationRDF::Annotation
-      @id_prefix="tg"
+
+      @localname_prefix="ta"
 
       property :hasBody,  :predicate => RDFVocabularies::OA.hasBody,   :class_name => LD4L::OpenAnnotationRDF::TagBody
 
@@ -21,7 +22,7 @@ module LD4L
         if @body == nil
           @body = LD4L::OpenAnnotationRDF::TagBody.new(
               ActiveTriples::LocalName::Minter.generate_local_name(
-                  LD4L::OpenAnnotationRDF::TagBody, 10, @id_prefix,
+                  LD4L::OpenAnnotationRDF::TagBody, 10, @localname_prefix,
                   LD4L::OpenAnnotationRDF.configuration.localname_minter ))
           @body.tag = tag
         end

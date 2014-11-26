@@ -1,7 +1,8 @@
 module LD4L
   module OpenAnnotationRDF
     class SemanticTagAnnotation < LD4L::OpenAnnotationRDF::Annotation
-      @id_prefix = "stg"
+
+      @localname_prefix = "sta"
 
       # USAGE: Use setTerm to set the hasBody property to be the URI of the controlled vocabulary term that
       #        is the annotation.

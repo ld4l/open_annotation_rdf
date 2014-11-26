@@ -118,11 +118,12 @@ describe 'LD4L::OpenAnnotationRDF' do
 
         it "should generate an Annotation URI using the configured localname_minter" do
           localname = ActiveTriples::LocalName::Minter.generate_local_name(
-              LD4L::OpenAnnotationRDF::Annotation, 10, 'foo',
+              LD4L::OpenAnnotationRDF::Annotation, 10,
+              LD4L::OpenAnnotationRDF::Annotation.localname_prefix,
               &LD4L::OpenAnnotationRDF.configuration.localname_minter )
           expect(localname).to be_kind_of String
-          expect(localname.size).to eq 51
-          expect(localname).to match /foo_configured_[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/
+          expect(localname.size).to eq 50
+          expect(localname).to match /oa_configured_[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/
         end
       end
     end
