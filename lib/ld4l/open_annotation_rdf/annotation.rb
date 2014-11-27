@@ -1,7 +1,3 @@
-require 'ld4l/open_annotation_rdf/vocab/oa'
-require 'ld4l/foaf_rdf'
-require 'rdf'
-
 module LD4L
   module OpenAnnotationRDF
     class Annotation < ActiveTriples::Resource

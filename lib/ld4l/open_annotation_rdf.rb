@@ -4,6 +4,10 @@ require 'active_triples/local_name'
 require	'linkeddata'
 require 'ld4l/foaf_rdf'
 require 'ld4l/open_annotation_rdf/version'
+require 'ld4l/open_annotation_rdf/vocab/oa'
+require 'ld4l/open_annotation_rdf/vocab/cnt'
+require 'ld4l/open_annotation_rdf/vocab/dctypes'
+
 
 module LD4L
   module OpenAnnotationRDF

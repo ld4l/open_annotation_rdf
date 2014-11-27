@@ -1,7 +1,3 @@
-require 'ld4l/open_annotation_rdf/vocab/cnt'
-require 'ld4l/open_annotation_rdf/vocab/dctypes'
-require 'rdf'
-
 module LD4L
   module OpenAnnotationRDF
     class CommentBody < ActiveTriples::Resource

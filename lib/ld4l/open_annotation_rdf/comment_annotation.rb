@@ -1,5 +1,3 @@
-require 'active_triples/local_name'
-
 module LD4L
   module OpenAnnotationRDF
     class CommentAnnotation < LD4L::OpenAnnotationRDF::Annotation

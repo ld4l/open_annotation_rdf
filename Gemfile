@@ -8,4 +8,4 @@ gem 'active-triples', :git => 'git@github.com:ActiveTriples/ActiveTriples.git', 
 
 # GETTING FROM GEMFILE UNTIL LD4L::FoafRDF GEM IS RELEASED, THEN MOVE TO *.gemspec FILE
 # Use LD4L::FoafRDF Gem
-gem 'ld4l-foaf_rdf', '~> 0.0.2', :git => 'git@github.com:ld4l/foaf_rdf.git'
+gem 'ld4l-foaf_rdf', :git => 'git@github.com:ld4l/foaf_rdf.git', :branch => 'master'

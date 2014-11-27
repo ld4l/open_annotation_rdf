@@ -1,7 +1,3 @@
-require 'ld4l/open_annotation_rdf/vocab/oa'
-require 'ld4l/open_annotation_rdf/vocab/cnt'
-require 'rdf'
-
 module LD4L
   module OpenAnnotationRDF
     class SemanticTagBody < ActiveTriples::Resource

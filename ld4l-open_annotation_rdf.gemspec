@@ -23,8 +23,8 @@ Gem::Specification.new do |spec|
 #  spec.add_dependency('ffi', '~> 1.9.5')
   spec.add_dependency('rdf', '~> 1.1')
 
-# GETTING FROM GEMFILE UNTIL MintLocalName CODE IS PUSHED INTO MASTER
-#  spec.add_dependency('active-triples', '~> 0.2')
+# GETTING FROM GEMFILE UNTIL ActiveTriples master CODE IS RELEASED (>0.4.0), THEN MOVE THIS BACK TO *.gemspec FILE
+#  spec.add_dependency('active-triples', '~> 0.4')
 
   spec.add_dependency('active_triples-local_name', '~> 0.1')
 
