@@ -40,6 +40,18 @@ module LD4L
           @body  = LD4L::OpenAnnotationRDF::SemanticTagBody.new(cv_uri)
         end
       end
+
+      def destroy
+        # TODO Determine behavior of destroy
+        #   Behaviour Options
+        #     * Always destroy SemanticTagAnnotation
+        #     * Handling of SemanticTagBody
+        #     **  If SemanticTagBody is used only by this SemanticTagAnnotation, destroy it.
+        #     **  Otherwise, do not destroy it.
+        # TODO Write tests for this behaviour.
+        # TODO Write code here to enforce.
+        super
+      end
     end
   end
 end

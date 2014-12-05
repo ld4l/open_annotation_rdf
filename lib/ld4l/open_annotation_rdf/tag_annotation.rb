@@ -16,8 +16,43 @@ module LD4L
       #
       # @return instance of TagBody
       def setTag(tag)
-        @body = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value(tag)
-        if @body == nil
+        raise ArgumentError, 'Argument must be a string'  unless tag.kind_of?(String)
+
+        # return existing body if tag value is unchanged
+        old_tag = @body ? @body.tag : nil
+        return @body if tag == old_tag
+
+        if LD4L::OpenAnnotationRDF.configuration.unique_tags
+          # when unique_tags = true, try to find an existing TagBody with the tag value before creating a new TagBody
+          # TODO Determine behavior of setTag when unique_tags=true
+          #   Behaviour Options:
+          #     * Look for an existing TagBody with this value.
+          #     **  If none found, create a new TagBody.
+          #     **  If one found, set @body to this TagBody
+          #     **  If multiple found, use the first one found
+          #           ### the same one may not be the first one found each time the query executes
+          @body = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value(tag)
+          if @body == nil
+            @body = LD4L::OpenAnnotationRDF::TagBody.new(
+                ActiveTriples::LocalName::Minter.generate_local_name(
+                    LD4L::OpenAnnotationRDF::TagBody, 10, @localname_prefix,
+                    LD4L::OpenAnnotationRDF.configuration.localname_minter ))
+            @body.tag = tag
+          end
+        else
+          # when unique_tags = false, ???  (see TODO)
+          # TODO Determine behavior of setTag when unique_tags=false
+          #   Behaviour Options:
+          #     * If this TagAnnotation does not have a TagBody (@body) set, then create a new TagBody.
+          #     * If this TagBody is used only by this TagAnnotation, then change the value in the TagBody.
+          #     * If this TagBody is used by multiple TagAnnotations,
+          #     **  EITHER change the value in the TagBody which changes it for all the TagAnnotations.
+          #           ### Likely an undesirable side effect having the value change for all TagAnnotations
+          #     **  OR create a new TagBody and update @body to that TagBody
+          #   OR
+          #     * [CURRENT] Always create a new TagBody each time setTag is called and update @body
+          #         ### This last options has the potential for orphaned TagBodys that no TagAnnotation references.
+          # TODO Rethink the current behavior which is always to create a new TagBody potentially leaving around orphans.
           @body = LD4L::OpenAnnotationRDF::TagBody.new(
               ActiveTriples::LocalName::Minter.generate_local_name(
                   LD4L::OpenAnnotationRDF::TagBody, 10, @localname_prefix,
@@ -44,6 +79,18 @@ module LD4L
           tag_uri = tag_uri.rdf_subject  if tag_uri.kind_of?(ActiveTriples::Resource)
           @body  = LD4L::OpenAnnotationRDF::TagBody.new(tag_uri)
         end
+      end
+
+      def destroy
+        # TODO Determine behavior of destroy
+        #   Behaviour Options
+        #     * Always destroy TagAnnotation
+        #     * Handling of TagBody
+        #     **  If TagBody is used only by this TagAnnotation, destroy it.
+        #     **  Otherwise, do not destroy it.
+        # TODO Write tests for this behaviour.
+        # TODO Write code here to enforce.
+        super
       end
     end
   end
