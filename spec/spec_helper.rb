@@ -17,4 +17,5 @@ RSpec.configure do |config|
   config.formatter = :progress
 end
 
+# TODO Need to use allow, receive, and_return instead of creating the repository here to avoid bleed over between tests.
 ActiveTriples::Repositories.add_repository :default, RDF::Repository.new

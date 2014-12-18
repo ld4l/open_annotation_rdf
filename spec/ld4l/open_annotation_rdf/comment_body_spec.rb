@@ -126,14 +126,14 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
     end
 
     it "should be settable" do
-      a_format = RDFVocabularies::CNT.chars
+      a_format = "text/rtf"
       subject.format = a_format
-      expect(subject.format.first.rdf_subject).to eq a_format
+      expect(subject.format.first).to eq "text/rtf"
     end
 
     it "should be changeable" do
-      orig_format = RDFVocabularies::CNT.chars
-      new_format  = RDFVocabularies::DCTYPES.text
+      orig_format = "text/plain"
+      new_format  = "text/xml"
       subject.format = orig_format
       subject.format = new_format
       expect(subject.format.first.rdf_subject).to eq  new_format
