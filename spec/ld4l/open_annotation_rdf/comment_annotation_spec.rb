@@ -366,7 +366,6 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       before do
         subject << RDF::Statement(subject.rdf_subject, RDF::DC.contributor, 'Tove Jansson')
         subject << RDF::Statement(subject.rdf_subject, RDF::DC.relation, RDF::URI('http://example.org/moomi'))
-# binding.pry
         node = RDF::Node.new
         subject << RDF::Statement(RDF::URI('http://example.org/moomi'), RDF::DC.relation, node)
         subject << RDF::Statement(node, RDF::DC.title, 'bnode')
@@ -377,7 +376,6 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       end
 
       it 'should return generic Resources' do
-# binding.pry
         expect(subject.attributes[RDF::DC.relation.to_s].first).to be_a ActiveTriples::Resource
       end
 

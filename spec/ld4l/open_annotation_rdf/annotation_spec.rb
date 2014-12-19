@@ -398,7 +398,6 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
       before do
         subject << RDF::Statement(subject.rdf_subject, RDF::DC.contributor, 'Tove Jansson')
         subject << RDF::Statement(subject.rdf_subject, RDF::DC.relation, RDF::URI('http://example.org/moomi'))
-# binding.pry
         node = RDF::Node.new
         subject << RDF::Statement(RDF::URI('http://example.org/moomi'), RDF::DC.relation, node)
         subject << RDF::Statement(node, RDF::DC.title, 'bnode')
