@@ -60,10 +60,10 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
   # -------------------------------------------------
 
   describe 'type' do
-    it "should be set to text and astext from new" do
+    it "should be set to text and ContentAsText from new" do
       expect(subject.type.size).to eq 2
       expect(subject.type).to include RDFVocabularies::DCTYPES.Text
-      expect(subject.type).to include RDFVocabularies::CNT.AsText
+      expect(subject.type).to include RDFVocabularies::CNT.ContentAsText
     end
 
     it "should be settable" do
@@ -73,26 +73,26 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
     end
 
     it "should be settable to multiple values" do
-      t = [RDFVocabularies::DCTYPES.Text, RDFVocabularies::CNT.AsText]
+      t = [RDFVocabularies::DCTYPES.Text, RDFVocabularies::CNT.ContentAsText]
       subject.set_value(:type,t)
       expect(subject.type.size).to eq 2
       expect(subject.type).to include RDFVocabularies::DCTYPES.Text
-      expect(subject.type).to include RDFVocabularies::CNT.AsText
+      expect(subject.type).to include RDFVocabularies::CNT.ContentAsText
     end
 
     it "should be changeable" do
       subject.type = RDFVocabularies::DCTYPES.Text
-      subject.type = RDFVocabularies::CNT.AsText
+      subject.type = RDFVocabularies::CNT.ContentAsText
       expect(subject.type.size).to eq 1
-      expect(subject.type.first).to eq RDFVocabularies::CNT.AsText
+      expect(subject.type.first).to eq RDFVocabularies::CNT.ContentAsText
     end
 
     it "should be changeable for multiple values" do
-      t = [RDFVocabularies::DCTYPES.Text, RDFVocabularies::CNT.AsText]
+      t = [RDFVocabularies::DCTYPES.Text, RDFVocabularies::CNT.ContentAsText]
       subject.set_value(:type,t)
       expect(subject.type.size).to eq 2
       expect(subject.type).to include RDFVocabularies::DCTYPES.Text
-      expect(subject.type).to include RDFVocabularies::CNT.AsText
+      expect(subject.type).to include RDFVocabularies::CNT.ContentAsText
       t = subject.get_values(:type)
       t[0] = RDFVocabularies::OA.Tag           # dummy type for testing
       t[1] = RDFVocabularies::OA.SemanticTag   # dummy type for testing

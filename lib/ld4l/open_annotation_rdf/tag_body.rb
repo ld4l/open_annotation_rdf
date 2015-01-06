@@ -33,7 +33,7 @@ module LD4L
         super(*args)
 
         t = get_values(:type)
-        t << RDFVocabularies::CNT.AsText
+        t << RDFVocabularies::CNT.ContentAsText
         set_value(:type,t)
       end
     end

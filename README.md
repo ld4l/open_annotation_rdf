@@ -63,7 +63,7 @@ puts cb.dump :ttl
    <http://www.w3.org/ns/oa#hasTarget> <http://example.org/bibref/br3>;
    <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#commenting> .
 
-<http://localhost/9c8c8126-2d31-48be-81d8-3cd4748a3351> a <http://www.w3.org/2011/content#AsText>,
+<http://localhost/9c8c8126-2d31-48be-81d8-3cd4748a3351> a <http://www.w3.org/2011/content#ContentAsText>,
                                                           <http://purl.org/dc/dcmitype/Text>;
    <http://purl.org/dc/terms/format> "text/plain";
    <http://www.w3.org/2011/content#chars> "This book is a good resource on archery technique." .
@@ -92,7 +92,7 @@ puts tb.dump :ttl
    <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#tagging> .
 
 <http://localhost/88db4b38-8b99-4939-b376-1392019aa30c> a <http://www.w3.org/ns/oa#Tag>,
-                                                          <http://www.w3.org/2011/content#AsText>;
+                                                          <http://www.w3.org/2011/content#ContentAsText>;
    <http://www.w3.org/2011/content#chars> "archery" .
 ```
 
