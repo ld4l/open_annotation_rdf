@@ -63,7 +63,7 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
     it "should be set to text and astext from new" do
       expect(subject.type.size).to eq 2
       expect(subject.type).to include RDFVocabularies::OA.Tag
-      expect(subject.type).to include RDFVocabularies::CNT.AsText
+      expect(subject.type).to include RDFVocabularies::CNT.ContentAsText
     end
   end
 

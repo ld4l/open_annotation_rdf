@@ -5,7 +5,7 @@ module LD4L
       class << self; attr_reader :localname_prefix end
       @localname_prefix="cb"
 
-      configure :type => RDFVocabularies::CNT.AsText,
+      configure :type => RDFVocabularies::CNT.ContentAsText,
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
                 :repository => :default
 
