@@ -207,6 +207,7 @@ The listed ontologies are used to represent the primary metadata about the annot
 Other ontologies may also be used that aren't listed.
  
 * [OA](http://www.openannotation.org/spec/core/)
+* [FOAF](http://xmlns.com/foaf/spec/)
 * [RDF](http://www.w3.org/TR/rdf-syntax-grammar/)
 * [Dublin Core (DC)](http://dublincore.org/documents/dces/)
 * [Dublin Core Terms (DCTERMS)](http://dublincore.org/documents/dcmi-terms/)

@@ -27,6 +27,11 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
         subject.set_subject! RDF::URI('http://example.org/moomin')
       end
 
+      after do
+        LD4L::OpenAnnotationRDF.send(:remove_const, :Annotation)
+        load 'ld4l/open_annotation_rdf/annotation.rb'
+      end
+
       it 'should update graph subjects' do
         expect(subject.has_statement?(RDF::Statement.new(subject.rdf_subject, RDF::DC.title, RDF::Literal('Comet in Moominland')))).to be true
       end
@@ -403,6 +408,11 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
         subject << RDF::Statement(node, RDF::DC.title, 'bnode')
       end
 
+      after do
+        LD4L::OpenAnnotationRDF.send(:remove_const, :Annotation)
+        load 'ld4l/open_annotation_rdf/annotation.rb'
+      end
+
       it 'should include data with URIs as attribute names' do
         expect(subject.attributes[RDF::DC.contributor.to_s]).to eq ['Tove Jansson']
       end
@@ -578,6 +588,8 @@ END
     after do
       Object.send(:remove_const, "DummyDocument")
       Object.send(:remove_const, "DummyPerson")
+      LD4L::OpenAnnotationRDF.send(:remove_const, :Annotation)
+      load 'ld4l/open_annotation_rdf/annotation.rb'
     end
 
     it 'should allow access to deep nodes' do

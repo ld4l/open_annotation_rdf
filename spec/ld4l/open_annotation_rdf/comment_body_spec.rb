@@ -136,7 +136,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
       new_format  = "text/xml"
       subject.format = orig_format
       subject.format = new_format
-      expect(subject.format.first.rdf_subject).to eq  new_format
+      expect(subject.format.first).to eq  new_format
     end
   end
 
