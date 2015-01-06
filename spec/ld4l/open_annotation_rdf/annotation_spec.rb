@@ -189,7 +189,7 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
       b = a.getBody
       expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::CommentBody)
       expect(b.type).to include RDFVocabularies::DCTYPES.Text
-      expect(b.type).to include RDFVocabularies::CNT.AsText
+      expect(b.type).to include RDFVocabularies::CNT.ContentAsText
       expect(b.content).to eq ["This is a comment."]
       expect(b.format.first).to eq "text/plain"
     end
@@ -215,7 +215,7 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
       b = a.getBody
       expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::TagBody)
       expect(b.type).to include RDFVocabularies::OA.Tag
-      expect(b.type).to include RDFVocabularies::CNT.AsText
+      expect(b.type).to include RDFVocabularies::CNT.ContentAsText
       expect(b.tag).to eq ["good"]
     end
 
