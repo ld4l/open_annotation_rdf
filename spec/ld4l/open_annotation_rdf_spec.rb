@@ -7,6 +7,7 @@ describe "LD4L::OpenAnnotationRDF" do
       LD4L::OpenAnnotationRDF.configure do |config|
         config.base_uri = "http://localhost/test/"
         config.localname_minter = lambda { |prefix=""| prefix+'_configured_'+SecureRandom.uuid }
+        config.unique_tags = false
       end
       class DummyAnnotation < LD4L::OpenAnnotationRDF::Annotation
         configure :type => RDFVocabularies::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
@@ -21,6 +22,7 @@ describe "LD4L::OpenAnnotationRDF" do
       config = LD4L::OpenAnnotationRDF.configuration
       expect(config.base_uri).to eq "http://localhost/test/"
       expect(config.localname_minter).to be_kind_of Proc
+      expect(config.unique_tags).to be false
     end
 
     it "should use configured value in DummyAnnotation" do
@@ -40,6 +42,7 @@ describe "LD4L::OpenAnnotationRDF" do
       LD4L::OpenAnnotationRDF.configure do |config|
         config.base_uri = "http://localhost/test/"
         config.localname_minter = lambda { |prefix=""| prefix+'_configured_'+SecureRandom.uuid }
+        config.unique_tags = false
       end
     end
 
@@ -48,6 +51,7 @@ describe "LD4L::OpenAnnotationRDF" do
       config = LD4L::OpenAnnotationRDF.configuration
       expect(config.base_uri).to eq "http://localhost/"
       expect(config.localname_minter).to eq nil
+      expect(config.unique_tags).to be true
     end
   end
 end

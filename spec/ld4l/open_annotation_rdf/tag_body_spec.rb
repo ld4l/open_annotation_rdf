@@ -86,11 +86,18 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
 
   describe "#fetch_by_tag_value" do
     it "should not find non-existent tag" do
-      pending("Need to write")
+      tb = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value('non_existing_tag')
+      expect(tb).to be_nil
     end
 
-    it "should find existent tag" do
-      pending("Need to write")
+    it "should find existing tag" do
+      tb1 = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/existing_tag')
+      tb1.tag = 'existing_tag'
+      tb1.persist!
+      expect(tb1).to be_persisted
+
+      tb2 = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value('existing_tag')
+      expect(tb2.rdf_subject).to eq tb1.rdf_subject
     end
   end
 

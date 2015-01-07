@@ -110,47 +110,63 @@ describe 'LD4L::OpenAnnotationRDF::TagAnnotation' do
       allow(subject.class).to receive(:repository).and_return(nil)
       allow(subject).to receive(:repository).and_return(@repo)
     end
+
     context "when new value is nil" do
-      it "should throw invalid aguement exception" do
-        pending( "need to write this test" )
+      it "should throw invalid arguement exception" do
+        expect{ subject.setTag(nil) }.to raise_error
+      end
+    end
+
+    context "when new value is a string of 0 length" do
+      it "should throw invalid arguement exception" do
+        expect{ subject.setTag("") }.to raise_error
       end
     end
 
     context "when new value is same as old value" do
-      it "should return the existing TabBody unchanged" do
-        pending( "need to write this test" )
+      it "should return the existing TagBody unchanged" do
+        tb1 = subject.setTag('foo')
+        tb2 = subject.setTag('foo')
+        expect(tb2).to eq tb1
       end
     end
+
     context "when config enforces unique tags" do
+      before do
+        LD4L::OpenAnnotationRDF.configuration.unique_tags = true
+      end
+      after do
+        LD4L::OpenAnnotationRDF.configuration.reset_unique_tags
+      end
+
       context "and tag doesn't already exist as a TagBody" do
-        before do
-          tb = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/new_tag')
-          tb.tag = "foo"
-          expect(tb).not_to be_persisted
-        end
         it "should create an instance of LD4L::OpenAnnotationRDF::TagBody and set hasBody property to it" do
+          # verify tag value doesn't already exist
+          tb = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value('foo')
+          expect(tb).to be_nil
+
           subject.setTag('foo')
           expect(subject.hasBody.first.tag.first).to eq 'foo'
           expect(subject.getBody.tag.first).to eq 'foo'
-          # NOTE: Because default minter is used for creating localname, the minted URI for the new tag body
-          #       should be a UUID and not match 'existing_tag' localname.
-          expect(subject.getBody.rdf_subject.to_s).not_to eq 'http://example.org/existing_tag'
         end
       end
 
       context "and tag already exists as a TagBody" do
         before do
           tb = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/existing_tag')
-          tb.tag = "foo"
+          tb.tag = 'foo'
           tb.persist!
           expect(tb).to be_persisted
         end
         it "should resume the existing LD4L::OpenAnnotationRDF::TagBody and set hasBody property to it" do
-          subject.setTag('foo')
           tb = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/existing_tag')
+          expect(tb.tag).to eq ['foo']
           expect(tb).to be_persisted
+
+          subject.setTag('foo')
           expect(subject.hasBody.first.rdf_subject.to_s).to eq 'http://example.org/existing_tag'
           expect(subject.getBody.rdf_subject.to_s).to eq 'http://example.org/existing_tag'
+          expect(subject.getBody.rdf_subject).to eq tb.rdf_subject
           # NOTE: body is considered not persisted because it's parent, the annotation, is not persisted
           expect(subject.getBody).not_to be_persisted
         end
@@ -158,41 +174,43 @@ describe 'LD4L::OpenAnnotationRDF::TagAnnotation' do
     end
 
     context "when config does not enforce unique tags" do
-      context "and tag doesn't already exist as a TagBody" do
-        before do
-          tb = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/new_tag')
-          tb.tag = "foo"
-          expect(tb).not_to be_persisted
-        end
-        it "should create an instance of LD4L::OpenAnnotationRDF::TagBody and set hasBody property to it" do
-          pending( "need to write this test")
+      before do
+        LD4L::OpenAnnotationRDF.configuration.unique_tags = false
+      end
+      after do
+        LD4L::OpenAnnotationRDF.configuration.reset_unique_tags
+      end
 
-          # subject.setTag('foo')
-          # expect(subject.hasBody.first.tag.first).to eq 'foo'
-          # expect(subject.getBody.tag.first).to eq 'foo'
-          # # NOTE: Because default minter is used for creating localname, the minted URI for the new tag body
-          # #       should be a UUID and not match 'existing_tag' localname.
-          # expect(subject.getBody.rdf_subject.to_s).not_to eq 'http://example.org/existing_tag'
+      context "and tag doesn't already exist as a TagBody" do
+        it "should create an instance of LD4L::OpenAnnotationRDF::TagBody and set hasBody property to it" do
+          # verify tag value doesn't already exist
+          tb = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value('new_foo')
+          expect(tb).to be_nil
+
+          subject.setTag('new_foo')
+          expect(subject.hasBody.first.tag.first).to eq 'new_foo'
+          expect(subject.getBody.tag.first).to eq 'new_foo'
         end
       end
 
       context "and tag already exists as a TagBody" do
         before do
           tb = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/existing_tag')
-          tb.tag = "foo"
+          tb.tag = 'foo'
           tb.persist!
           expect(tb).to be_persisted
         end
-        it "should resume the existing LD4L::OpenAnnotationRDF::TagBody and set hasBody property to it" do
-          pending( "need to write this test")
+        it "should create an instance of LD4L::OpenAnnotationRDF::TagBody and set hasBody property to it" do
+          tb = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/existing_tag')
+          expect(tb.tag).to eq ['foo']
+          expect(tb).to be_persisted
 
-          # subject.setTag('foo')
-          # tb = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/existing_tag')
-          # expect(tb).to be_persisted
-          # expect(subject.hasBody.first.rdf_subject.to_s).to eq 'http://example.org/existing_tag'
-          # expect(subject.getBody.rdf_subject.to_s).to eq 'http://example.org/existing_tag'
-          # # NOTE: body is considered not persisted because it's parent, the annotation, is not persisted
-          # expect(subject.getBody).not_to be_persisted
+          subject.setTag('foo')
+          expect(subject.hasBody.first.rdf_subject.to_s).not_to eq 'http://example.org/existing_tag'
+          expect(subject.getBody.rdf_subject.to_s).not_to eq 'http://example.org/existing_tag'
+          expect(subject.getBody.rdf_subject).not_to eq tb.rdf_subject
+          # NOTE: body is considered not persisted because it's parent, the annotation, is not persisted
+          expect(subject.getBody).not_to be_persisted
         end
       end
     end

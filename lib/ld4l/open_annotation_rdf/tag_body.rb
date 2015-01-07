@@ -17,16 +17,22 @@ module LD4L
       # @param [String] tag value
       #
       # @return instance of TagBody if found; otherwise, nil
-      #
-      # @todo Need to query for a TagBody resource that already has the tag value.
-      # @todo Stubbed to always return nil
       def self::fetch_by_tag_value( tag_value )
-        # TODO: Need to query for a TagBody resource that already has the tag value.
-        #       * if found - return resumed instance of TagBody
-        #       * if not found - return nil
+        graph = ActiveTriples::Repositories.repositories[repository]
+        query = RDF::Query.new({
+          :tagbody => {
+            RDF.type =>  RDFVocabularies::OA.Tag,
+            RDFVocabularies::CNT.chars => tag_value,
+          }
+        })
 
-        # TODO:  STUBBED
-        nil
+        tagbody = nil
+        results = query.execute(graph)
+        unless( results.empty? )
+          tagbody_uri = results[0].to_hash[:tagbody]
+          tagbody = LD4L::OpenAnnotationRDF::TagBody.new(tagbody_uri)
+        end
+        tagbody
       end
 
       def initialize(*args)

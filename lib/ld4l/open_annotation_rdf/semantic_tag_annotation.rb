@@ -19,7 +19,7 @@ module LD4L
       def setTerm(cv_uri)
         cv_uri = RDF::URI(cv_uri) unless cv_uri.kind_of?(RDF::URI)
         @body = LD4L::OpenAnnotationRDF::SemanticTagBody.new(cv_uri)
-        set_value(:hasBody, cv_uri)
+        set_value(:hasBody, @body)
         @body
       end
 

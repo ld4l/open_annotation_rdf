@@ -16,11 +16,11 @@ module LD4L
       #
       # @return instance of TagBody
       def setTag(tag)
-        raise ArgumentError, 'Argument must be a string'  unless tag.kind_of?(String)
+        raise ArgumentError, 'Argument must be a string with at least one character'  unless tag.kind_of?(String) && tag.size > 0
 
         # return existing body if tag value is unchanged
         old_tag = @body ? @body.tag : nil
-        return @body if tag == old_tag
+        return @body if old_tag && old_tag.include?(tag)
 
         if LD4L::OpenAnnotationRDF.configuration.unique_tags
           # when unique_tags = true, try to find an existing TagBody with the tag value before creating a new TagBody
@@ -31,7 +31,7 @@ module LD4L
           #     **  If one found, set @body to this TagBody
           #     **  If multiple found, use the first one found
           #           ### the same one may not be the first one found each time the query executes
-          @body = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value(tag)
+          @body = LD4L::OpenAnnotationRDF.configuration.unique_tags ? LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value(tag) : nil
           if @body == nil
             @body = LD4L::OpenAnnotationRDF::TagBody.new(
                 ActiveTriples::LocalName::Minter.generate_local_name(

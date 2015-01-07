@@ -138,7 +138,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
         expect(subject.getBody).to be_kind_of LD4L::OpenAnnotationRDF::SemanticTagBody
         expect(subject.getBody.rdf_subject.to_s).to eq 'http://example.org/existing_term'
         # NOTE: body is considered not persisted because it's parent, the annotation, is not persisted
-        expect(subject.getBody).to be_persisted
+        expect(subject.getBody).not_to be_persisted
       end
     end
   end

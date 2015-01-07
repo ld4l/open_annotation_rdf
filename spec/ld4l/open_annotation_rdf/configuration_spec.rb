@@ -170,5 +170,25 @@ describe 'LD4L::OpenAnnotationRDF' do
         expect(config.localname_minter).to eq nil
       end
     end
+
+    describe "#unique_tags" do
+      it "should default to true" do
+        expect(LD4L::OpenAnnotationRDF::Configuration.new.unique_tags).to be true
+      end
+
+      it "should be settable" do
+        config = LD4L::OpenAnnotationRDF::Configuration.new
+        config.unique_tags = false
+        expect(config.unique_tags).to be false
+      end
+
+      it "should be re-settable" do
+        config = LD4L::OpenAnnotationRDF::Configuration.new
+        config.unique_tags = false
+        expect(config.unique_tags).to be false
+        config.reset_unique_tags
+        expect(config.unique_tags).to be true
+      end
+    end
   end
 end
