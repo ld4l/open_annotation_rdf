@@ -1,6 +1,7 @@
 #LD4L::OpenAnnotationRDF
 
-[![Build Status](https://travis-ci.org/LD4L/ld4l-open_annotation_rdf.png?branch=master)](https://travis-ci.org/LD4L/ld4l-open_annotation_rdf)
+[![Build Status](https://travis-ci.org/ld4l/open_annotation_rdf.png?branch=master)](https://travis-ci.org/ld4l/open_annotation_rdf)
+
 
 LD4L Open Annotation RDF provides tools for modeling annotations based on the Open Annotation ontology and persisting to a triplestore.
 
