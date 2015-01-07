@@ -13,12 +13,19 @@ module LD4L
       # Set the hasBody property to the URI of the controlled vocabulary term that is the annotation and
       # create the semantic tag body instance identifying the term as a semantic tag annotation.
       #
-      # @param [String]
+      # @param [String] controlled vocabulary uri for the term
       #
       # @return instance of SemanticTagBody
-      def setTerm(cv_uri)
-        cv_uri = RDF::URI(cv_uri) unless cv_uri.kind_of?(RDF::URI)
-        @body = LD4L::OpenAnnotationRDF::SemanticTagBody.new(cv_uri)
+      def setTerm(term_uri)
+        raise ArgumentError, 'Argument must be a uri string or an instance of RDF::URI'  unless
+            term_uri.kind_of?(String) && term_uri.size > 0 || term_uri.kind_of?(RDF::URI)
+
+        # return existing body if term is unchanged
+        old_term_uri = @body ? @body.rdf_subject.to_s : nil
+        term_uri = RDF::URI(term_uri) unless term_uri.kind_of?(RDF::URI)
+        return @body if old_term_uri && old_term_uri == term_uri.to_s
+
+        @body = LD4L::OpenAnnotationRDF::SemanticTagBody.new(term_uri)
         set_value(:hasBody, @body)
         @body
       end
@@ -34,10 +41,10 @@ module LD4L
         set_value(:motivatedBy, RDFVocabularies::OA.tagging) unless m.kind_of?(Array) && m.size > 0
 
         # resume SemanticTagBody if it exists
-        cv_uri = get_values(:hasBody).first
-        if( cv_uri )
-          cv_uri = cv_uri.rdf_subject  if cv_uri.kind_of?(ActiveTriples::Resource)
-          @body  = LD4L::OpenAnnotationRDF::SemanticTagBody.new(cv_uri)
+        term_uri = get_values(:hasBody).first
+        if( term_uri )
+          term_uri = term_uri.rdf_subject  if term_uri.kind_of?(ActiveTriples::Resource)
+          @body  = LD4L::OpenAnnotationRDF::SemanticTagBody.new(term_uri)
         end
       end
 

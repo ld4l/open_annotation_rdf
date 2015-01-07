@@ -73,6 +73,153 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagBody' do
     end
   end
 
+  describe "#annotations_using" do
+
+    context "when term value is nil" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::SemanticTagBody.annotations_using(nil) }.to raise_error
+      end
+    end
+
+    context "when term value is a string of 0 length" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::SemanticTagBody.annotations_using("") }.to raise_error
+      end
+    end
+
+    context "when term is not a string or uri" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::SemanticTagBody.annotations_using(3) }.to raise_error
+      end
+    end
+
+    context "when terms exist in the repository" do
+      before(:all) do
+        # Create inmemory repository
+        sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta1')
+        sta.setTerm(RDF::URI("http://example.org/EXISTING_term"))
+        sta.persist!
+        sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta2')
+        sta.setTerm(RDF::URI("http://example.org/EXISTING_term"))
+        sta.persist!
+        stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/UNUSED_term')
+        stb.persist!
+      end
+      after(:all) do
+        LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta1').destroy!
+        LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta2').destroy!
+        LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/UNUSED_term').destroy!
+      end
+
+      context "and term is passed as string URI" do
+        it "should find annotations using the term" do
+          annotations = LD4L::OpenAnnotationRDF::SemanticTagBody.annotations_using('http://example.org/EXISTING_term')
+          expect( annotations.include?(RDF::URI('http://example.org/sta1')) ).to be true
+          expect( annotations.include?(RDF::URI('http://example.org/sta2')) ).to be true
+          expect( annotations.size ).to be 2
+        end
+
+        it "should find 0 annotations for unused term" do
+          annotations = LD4L::OpenAnnotationRDF::SemanticTagBody.annotations_using('http://example.org/UNUSED_term')
+          expect( annotations ).to eq []
+        end
+
+        it "should find 0 annotations for non-existent term" do
+          annotations = LD4L::OpenAnnotationRDF::SemanticTagBody.annotations_using('http://example.org/NONEXISTING_term')
+          expect( annotations ).to eq []
+        end
+      end
+
+      context "and term is passed as RDF::URI" do
+        it "should find annotations using the term" do
+          annotations = LD4L::OpenAnnotationRDF::SemanticTagBody.annotations_using(RDF::URI('http://example.org/EXISTING_term'))
+          expect( annotations.include?(RDF::URI('http://example.org/sta1')) ).to be true
+          expect( annotations.include?(RDF::URI('http://example.org/sta2')) ).to be true
+          expect( annotations.size ).to be 2
+        end
+
+        it "should find 0 annotations for unused term" do
+          annotations = LD4L::OpenAnnotationRDF::SemanticTagBody.annotations_using(RDF::URI('http://example.org/UNUSED_term'))
+          expect( annotations ).to eq []
+        end
+
+        it "should find 0 annotations for non-existent term" do
+          annotations = LD4L::OpenAnnotationRDF::SemanticTagBody.annotations_using(RDF::URI'http://example.org/NONEXISTING_term')
+          expect( annotations ).to eq []
+        end
+      end
+    end
+  end
+
+  describe "#destroy_if_unused" do
+    context "when term is nil" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::SemanticTagBody.destroy_if_unused(nil) }.to raise_error
+      end
+    end
+
+    context "when term is a string of 0 length" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::SemanticTagBody.destroy_if_unused("") }.to raise_error
+      end
+    end
+
+    context "when term is not a string or uri" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::SemanticTagBody.destroy_if_unused(3) }.to raise_error
+      end
+    end
+
+    context "when terms exist in the repository" do
+      before(:all) do
+        # Create inmemory repository
+        sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta1')
+        sta.setTerm(RDF::URI("http://example.org/EXISTING_term"))
+        sta.persist!
+        sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta2')
+        sta.setTerm(RDF::URI("http://example.org/EXISTING_term"))
+        sta.persist!
+        stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/UNUSED_term')
+        stb.persist!
+      end
+      after(:all) do
+        LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta1').destroy!
+        LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta2').destroy!
+        LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/UNUSED_term').destroy!
+      end
+
+      context "and term is passed as string URI" do
+        it "should not destroy if used by any annotations" do
+          expect( LD4L::OpenAnnotationRDF::SemanticTagBody.destroy_if_unused('http://example.org/EXISTING_term') ).to be false
+        end
+
+        it "should destory if not used by any annotations" do
+          expect( LD4L::OpenAnnotationRDF::SemanticTagBody.destroy_if_unused('http://example.org/UNUSED_term') ).to be true
+        end
+
+        it "will destory if term doesn't exist" do
+          # NOTE: ActiveTriples.destroy! persists the object to be destroyed before destroying it
+          expect( LD4L::OpenAnnotationRDF::SemanticTagBody.destroy_if_unused('http://example.org/NONEXISTENT_term') ).to be true
+        end
+      end
+
+      context "and term is passed as RDF::URI" do
+        it "should not destroy if used by any annotations" do
+          expect( LD4L::OpenAnnotationRDF::SemanticTagBody.destroy_if_unused(RDF::URI('http://example.org/EXISTING_term')) ).to be false
+        end
+
+        it "should destory if not used by any annotations" do
+          expect( LD4L::OpenAnnotationRDF::SemanticTagBody.destroy_if_unused(RDF::URI('http://example.org/UNUSED_term')) ).to be true
+        end
+
+        it "will destory if term doesn't exist" do
+          # NOTE: ActiveTriples.destroy! persists the object to be destroyed before destroying it
+          expect( LD4L::OpenAnnotationRDF::SemanticTagBody.destroy_if_unused(RDF::URI('http://example.org/NONEXISTENT_term')) ).to be true
+        end
+      end
+    end
+  end
+
   # -----------------------------------------------
   #  END -- Test attributes specific to this model
   # -----------------------------------------------

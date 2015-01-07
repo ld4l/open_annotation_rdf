@@ -106,6 +106,33 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
       allow(subject.class).to receive(:repository).and_return(nil)
       allow(subject).to receive(:repository).and_return(@repo)
     end
+
+    context "when new value is nil" do
+      it "should throw invalid arguement exception" do
+        expect{ subject.setTerm(nil) }.to raise_error
+      end
+    end
+
+    context "when new value is a string of 0 length" do
+      it "should throw invalid arguement exception" do
+        expect{ subject.setTerm("") }.to raise_error
+      end
+    end
+
+    context "when new value is not a string or uri" do
+      it "should throw invalid arguement exception" do
+        expect{ subject.setTerm(3) }.to raise_error
+      end
+    end
+
+    context "when new value is same as old value" do
+      it "should return the existing TagBody unchanged" do
+        tb1 = subject.setTerm('http://example.org/new_term')
+        tb2 = subject.setTerm('http://example.org/new_term')
+        expect(tb2).to eq tb1
+      end
+    end
+
     context "when term doesn't already exist as a SemanticTagBody" do
       before do
         stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/new_term')

@@ -126,13 +126,14 @@ puts stb.dump :ttl
 
 * base_uri - base URI used when new resources are created (default="http://localhost/")
 * localname_minter - minter function to use for creating unique local names (default=nil which uses default minter in active_triples-local_name gem)
+* unique_tags - if true, re-use existing TagBodies only creating a new TagBody if one doesn't exist with the tag value being set; otherwise, if false, create new TagBody when tag value is updated (default=true)
 
 *Setup for all examples.*
 
 * Restart your interactive session (e.g. irb, pry).
 * Use the Setup for all examples in main Examples section above.
 
-*Example usage using configured base_uri and default localname_minter.*
+#### Example usage using **configured base_uri** and default localname_minter.
 ```
 LD4L::OpenAnnotationRDF.reset
 LD4L::OpenAnnotationRDF.configure do |config|
@@ -155,13 +156,13 @@ NOTE: If base_uri is not used, you need to restart your interactive environment 
   through the main Examples, the base_uri was set to the default base_uri.
 
 
-*Example triples created for a person with configured base_uri and default minter.*
+**Example triples created for a person with configured base_uri and default minter.**
 ```
 <http://example.org/ca45c9c85b-25af-4c52-96a4-cf0d8b70a768> a <http://www.w3.org/ns/oa#Annotation>;
    <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#commenting> .
 ```
 
-*Example usage using configured base_uri and configured localname_minter.*
+#### Example usage using **configured base_uri** and **configured localname_minter**.
 ```
 LD4L::OpenAnnotationRDF.configure do |config|
   config.base_uri = "http://example.org/"
@@ -179,12 +180,19 @@ NOTE: If base_uri is not used, you need to restart your interactive environment 
   through the main Examples, the base_uri was set to the default base_uri.
 
 
-*Example triples created for a person with configured base_uri and configured minter.*
+**Example triples created for a person with configured base_uri and configured minter.**
 ```
 <http://example.org/ca_configured_6498ba05-8b21-4e8c-b9d4-a6d5d2180966> a <http://www.w3.org/ns/oa#Annotation>;
    <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#commenting> .
 ```
 
+#### Example configuring unique_tags
+```
+# Any of these are valid and will change the configuration of unique_tags
+LD4L::OpenAnnotationRDF.configuration.unique_tags = true
+LD4L::OpenAnnotationRDF.configuration.unique_tags = false
+LD4L::OpenAnnotationRDF.configuration.reset_unique_tags
+```
 
 ### Models
 

@@ -123,6 +123,12 @@ describe 'LD4L::OpenAnnotationRDF::TagAnnotation' do
       end
     end
 
+    context "when new value is not a string" do
+      it "should throw invalid arguement exception" do
+        expect{ subject.setTag(3) }.to raise_error
+      end
+    end
+
     context "when new value is same as old value" do
       it "should return the existing TagBody unchanged" do
         tb1 = subject.setTag('foo')

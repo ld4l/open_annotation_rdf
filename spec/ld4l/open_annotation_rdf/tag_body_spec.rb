@@ -84,20 +84,118 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
     end
   end
 
-  describe "#fetch_by_tag_value" do
-    it "should not find non-existent tag" do
-      tb = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value('non_existing_tag')
-      expect(tb).to be_nil
+  describe "#annotations_using" do
+
+    context "when tag value is nil" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::TagBody.annotations_using(nil) }.to raise_error
+      end
     end
 
-    it "should find existing tag" do
-      tb1 = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/existing_tag')
-      tb1.tag = 'existing_tag'
-      tb1.persist!
-      expect(tb1).to be_persisted
+    context "when tag value is a string of 0 length" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::TagBody.annotations_using("") }.to raise_error
+      end
+    end
 
-      tb2 = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value('existing_tag')
-      expect(tb2.rdf_subject).to eq tb1.rdf_subject
+    context "when tag value is not a string" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::TagBody.annotations_using(3) }.to raise_error
+      end
+    end
+
+    context "when tags exist in the repository" do
+      before(:all) do
+        # Create inmemory repository
+        ta = LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta1')
+        ta.setTag('EXISTING_tag')
+        ta.persist!
+        ta = LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta2')
+        ta.setTag('EXISTING_tag')
+        ta.persist!
+        tb = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/UNUSED_tag')
+        tb.tag = 'UNUSED_tag'
+        tb.persist!
+      end
+      after(:all) do
+        LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta1').destroy!
+        LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta2').destroy!
+        LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/UNUSED_tag').destroy!
+      end
+
+      it "should find annotations using a tag" do
+        annotations = LD4L::OpenAnnotationRDF::TagBody.annotations_using('EXISTING_tag')
+        expect( annotations.include?(RDF::URI('http://example.org/ta1')) ).to be true
+        expect( annotations.include?(RDF::URI('http://example.org/ta2')) ).to be true
+        expect( annotations.size ).to be 2
+      end
+
+      it "should find 0 annotations for unused tag" do
+        annotations = LD4L::OpenAnnotationRDF::TagBody.annotations_using('UNUSED_tag')
+        expect( annotations ).to eq []
+      end
+
+      it "should find 0 annotations for non-existent tag" do
+        annotations = LD4L::OpenAnnotationRDF::TagBody.annotations_using('NONEXISTING_tag')
+        expect( annotations ).to eq []
+      end
+    end
+  end
+
+  describe "#fetch_by_tag_value" do
+
+    context "when new value is nil" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value(nil) }.to raise_error
+      end
+    end
+
+    context "when new value is a string of 0 length" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value("") }.to raise_error
+      end
+    end
+
+    context "when new value is not a string" do
+      it "should throw invalid arguement exception" do
+        expect{ LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value(3) }.to raise_error
+      end
+    end
+
+    context "when tags exist in the repository" do
+      before(:all) do
+        # Create inmemory repository
+        ta = LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta1')
+        ta.setTag('EXISTING_tag')
+        ta.persist!
+        ta = LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta2')
+        ta.setTag('EXISTING_tag')
+        ta.persist!
+        tb = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/UNUSED_tag')
+        tb.tag = 'UNUSED_tag'
+        tb.persist!
+      end
+      after(:all) do
+        LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta1').destroy!
+        LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta2').destroy!
+        LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/UNUSED_tag').destroy!
+      end
+
+      it "should not find non-existent tag" do
+        expect( LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value('NONEXISTING_tag') ).to be_nil
+      end
+
+      it "should not find existent tag even if not referenced in an annotation" do
+        tb = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value('UNUSED_tag')
+        expect( tb ).not_to be_nil
+        expect( tb.rdf_subject.to_s ).to eq 'http://example.org/UNUSED_tag'
+      end
+
+      it "should find same existing tag body each time called" do
+        tb1 = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value('EXISTING_tag')
+        tb2 = LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value('EXISTING_tag')
+        expect(tb2.rdf_subject).to eq tb1.rdf_subject
+      end
     end
   end
 
