@@ -27,9 +27,7 @@ Gem::Specification.new do |spec|
 #  spec.add_dependency('active-triples', '~> 0.4')
 
   spec.add_dependency('active_triples-local_name', '~> 0.1')
-
-# GETTING FROM GEMFILE UNTIL ld4l-foaf_rdf GEM IS RELEASED
-# spec.add_dependency('ld4l-foaf_rdf', '~> 0.0')
+  spec.add_dependency('ld4l-foaf_rdf', '~> 0.0')
 
   spec.add_development_dependency('pry')
   spec.add_development_dependency('pry-byebug')
