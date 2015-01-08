@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{LD4L Open Annotation RDF provides tools for modeling a annotations based on the Open Annotation ontology and persisting to a triplestore.}
   spec.homepage      = "https://github.com/ld4l/open_annotation_rdf"
   spec.license       = "APACHE2"
-  spec.required_ruby_version     = '>= 2.1.2'
+  spec.required_ruby_version     = '>= 1.9.3'
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
@@ -30,7 +30,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency('ld4l-foaf_rdf', '~> 0.0')
 
   spec.add_development_dependency('pry')
-  spec.add_development_dependency('pry-byebug')
+  # spec.add_development_dependency('pry-byebug')    # Works with ruby > 2
+  # spec.add_development_dependency('pry-debugger')  # Works with ruby < 2
   spec.add_development_dependency('rdoc')
   spec.add_development_dependency('rspec')
   spec.add_development_dependency('guard-rspec')
