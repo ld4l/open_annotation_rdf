@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/ld4l/open_annotation_rdf.png?branch=master)](https://travis-ci.org/ld4l/open_annotation_rdf) 
 [![Test Coverage](https://img.shields.io/coveralls/ld4l/open_annotation_rdf.svg?branch=master)](https://coveralls.io/r/ld4l/open_annotation_rdf) 
 [![Gem Version](https://badge.fury.io/rb/ld4l-open_annotation_rdf.svg)](http://badge.fury.io/rb/ld4l-open_annotation_rdf)
+[![Dependency Status](https://www.versioneye.com/ruby/ld4l-open_annotation_rdf/0.0.4/badge.svg)](https://www.versioneye.com/ruby/ld4l-open_annotation_rdf/0.0.4)
 
 
 LD4L Open Annotation RDF provides tools for modeling annotations based on the Open Annotation ontology and persisting to a triplestore.
