@@ -151,13 +151,13 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
 
     it "should be settable" do
       subject.motivatedBy = RDFVocabularies::OA.describing
-      expect(subject.motivatedBy.first.rdf_subject).to eq RDFVocabularies::OA.describing
+      expect(subject.motivatedBy.first).to eq RDFVocabularies::OA.describing
     end
 
     it "should be changeable" do
       subject.motivatedBy = RDFVocabularies::OA.describing
       subject.motivatedBy = RDFVocabularies::OA.classifying
-      expect(subject.motivatedBy.first.rdf_subject).to eq RDFVocabularies::OA.classifying
+      expect(subject.motivatedBy.first).to eq RDFVocabularies::OA.classifying
     end
   end
 
@@ -189,7 +189,7 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
       expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
       expect(a.annotatedBy.first).to eq a_person
       expect(a.annotatedAt.first).to eq a_time
-      expect(a.motivatedBy.first.rdf_subject).to eq RDFVocabularies::OA.commenting
+      expect(a.motivatedBy.first).to eq RDFVocabularies::OA.commenting
 
       b = a.getBody
       expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::CommentBody)
@@ -215,7 +215,7 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
       expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
       expect(a.annotatedBy.first).to eq a_person
       expect(a.annotatedAt.first).to eq a_time
-      expect(a.motivatedBy.first.rdf_subject).to eq RDFVocabularies::OA.tagging
+      expect(a.motivatedBy.first).to eq RDFVocabularies::OA.tagging
 
       b = a.getBody
       expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::TagBody)
@@ -240,7 +240,7 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
       expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
       expect(a.annotatedBy.first).to eq a_person
       expect(a.annotatedAt.first).to eq a_time
-      expect(a.motivatedBy.first.rdf_subject).to eq RDFVocabularies::OA.tagging
+      expect(a.motivatedBy.first).to eq RDFVocabularies::OA.tagging
 
       b = a.getBody
       expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::SemanticTagBody)
@@ -293,7 +293,7 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
           end
 
           it "should reset the motivatedBy" do
-            expect(subject.motivatedBy.first.rdf_subject.to_s).to eq RDFVocabularies::OA.commenting.to_s
+            expect(subject.motivatedBy.first.to_s).to eq RDFVocabularies::OA.commenting.to_s
           end
 
           it "should be persisted" do
@@ -325,7 +325,7 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
 
         it "should delete from the repository" do
           subject.reload
-          expect(subject.motivatedBy.first.rdf_subject.to_s).to eq RDFVocabularies::OA.commenting.to_s
+          expect(subject.motivatedBy.first.to_s).to eq RDFVocabularies::OA.commenting.to_s
           subject.motivatedBy = []
           expect(subject.motivatedBy).to eq []
           subject.persist!

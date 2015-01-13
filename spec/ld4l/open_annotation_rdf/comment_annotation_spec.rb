@@ -154,18 +154,18 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
 
   describe 'motivatedBy' do
     it "should be OA.commenting if we haven't set it" do
-      expect(subject.motivatedBy.first.rdf_subject.to_s).to eq RDFVocabularies::OA.commenting
+      expect(subject.motivatedBy.first.to_s).to eq RDFVocabularies::OA.commenting
     end
 
     it "should be settable" do
       subject.motivatedBy = RDFVocabularies::OA.describing
-      expect(subject.motivatedBy.first.rdf_subject.to_s).to eq RDFVocabularies::OA.describing
+      expect(subject.motivatedBy.first.to_s).to eq RDFVocabularies::OA.describing
     end
 
     it "should be changeable" do
       subject.motivatedBy = RDFVocabularies::OA.describing
       subject.motivatedBy = RDFVocabularies::OA.classifying
-      expect(subject.motivatedBy.first.rdf_subject.to_s).to eq RDFVocabularies::OA.classifying
+      expect(subject.motivatedBy.first.to_s).to eq RDFVocabularies::OA.classifying
     end
   end
 
@@ -220,7 +220,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
           end
 
           it "should reset the motivatedBy" do
-            expect(subject.motivatedBy.first.rdf_subject.to_s).to eq RDFVocabularies::OA.commenting.to_s
+            expect(subject.motivatedBy.first.to_s).to eq RDFVocabularies::OA.commenting.to_s
           end
 
           it "should be persisted" do
@@ -252,7 +252,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
 
         it "should delete from the repository" do
           subject.reload
-          expect(subject.motivatedBy.first.rdf_subject.to_s).to eq RDFVocabularies::OA.commenting.to_s
+          expect(subject.motivatedBy.first.to_s).to eq RDFVocabularies::OA.commenting.to_s
           subject.motivatedBy = []
           expect(subject.motivatedBy).to eq []
           subject.persist!

@@ -14,34 +14,31 @@ module LD4L
       property :hasTarget,   :predicate => RDFVocabularies::OA.hasTarget    # :type => URI
       property :hasBody,     :predicate => RDFVocabularies::OA.hasBody
       property :annotatedBy, :predicate => RDFVocabularies::OA.annotatedBy, :class_name => LD4L::FoafRDF::Person
-      property :annotatedAt, :predicate => RDFVocabularies::OA.annotatedAt  # :type => xsd:dateTime    # the time Annotation was created
-      property :motivatedBy, :predicate => RDFVocabularies::OA.motivatedBy  # comes from RDFVocabularies::OA ontology
+      property :annotatedAt, :predicate => RDFVocabularies::OA.annotatedAt, :cast => false   # :type => xsd:dateTime    # the time Annotation was created
+      property :motivatedBy, :predicate => RDFVocabularies::OA.motivatedBy, :cast => false   # comes from RDFVocabularies::OA ontology
 
-      def self.resume(*args)
-        return nil      unless args.kind_of?(Array) && args.size > 0 && args.first.kind_of?(RDF::URI)
-
-        rdf_subject = args.first
-        a = new(rdf_subject)
+      def self.resume(uri_or_str)
+        # Let ActiveTriples::Resource validate uri_or_str when creating new Annotation
+        a = new(uri_or_str)
 
         # get motivatedBy
         m = a.get_values(:motivatedBy)
-        return a    unless m.kind_of?(Array) && m.size > 0 && m.first.kind_of?(ActiveTriples::Resource)
+        return a    unless m.kind_of?(Array) && m.size > 0 && m.first.kind_of?(RDF::Vocabulary::Term)
 
         # motivatedBy is set
-        m_uri = m.first.rdf_subject
-
+        m_uri = m.first
         # currently only support commenting and tagging
-        return LD4L::OpenAnnotationRDF::CommentAnnotation.new(rdf_subject) if m_uri == RDFVocabularies::OA.commenting
+        return LD4L::OpenAnnotationRDF::CommentAnnotation.new(uri_or_str) if m_uri == RDFVocabularies::OA.commenting
         return a                                                       unless m_uri == RDFVocabularies::OA.tagging
 
         # Tagging can be TagAnnotation or SemanticTagAnnotation.  Only way to tell is by checking type of body.
-        sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new(rdf_subject)
+        sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new(uri_or_str)
         stb = sta.getBody
-        return sta                                           if stb.type.include?(RDFVocabularies::OA.SemanticTag)
+        return sta                          if stb.type.include?(RDFVocabularies::OA.SemanticTag)
 
-        ta = LD4L::OpenAnnotationRDF::TagAnnotation.new(rdf_subject)
+        ta = LD4L::OpenAnnotationRDF::TagAnnotation.new(uri_or_str)
         tb = ta.getBody
-        return ta                                            if tb.type.include?(RDFVocabularies::OA.Tag)
+        return ta                           if tb.type.include?(RDFVocabularies::OA.Tag)
 
         # can't match to a known annotation type, so return as generic annotation
         return a
