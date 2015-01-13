@@ -9,8 +9,8 @@ module LD4L
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
                 :repository => :default
 
-      property :content, :predicate => RDFVocabularies::CNT.chars  # :type => XSD.string
-      property :format,  :predicate => RDF::DC.format              # :type => XSD.string
+      property :content, :predicate => RDFVocabularies::CNT.chars,  :cast => true  # :type => XSD.string
+      property :format,  :predicate => RDF::DC.format,              :cast => true  # :type => XSD.string
 
       def initialize(*args)
         super(*args)

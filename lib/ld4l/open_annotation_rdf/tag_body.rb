@@ -9,7 +9,7 @@ module LD4L
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
                 :repository => :default
 
-      property :tag,     :predicate => RDFVocabularies::CNT.chars  # :type => XSD.string
+      property :tag,     :predicate => RDFVocabularies::CNT.chars,   :cast => false  # :type => XSD.string
 
       ##
       # Get a list of annotations using the tag value.
