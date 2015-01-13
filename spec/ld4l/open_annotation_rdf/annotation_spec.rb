@@ -183,7 +183,7 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
       ca.persist!
       expect(ca).to be_persisted
       uri = ca.rdf_subject
-      
+
       a = LD4L::OpenAnnotationRDF::Annotation.resume(uri)
       expect(a).to be_a_kind_of(LD4L::OpenAnnotationRDF::CommentAnnotation)
       expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"

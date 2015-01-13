@@ -122,6 +122,43 @@ puts stb.dump :ttl
 <http://example.org/term/engineering> a <http://www.w3.org/ns/oa#SemanticTag> .
 ```
 
+*Resume annotation of unknown type.*
+```
+## Using RDF::URI
+# Create the annotations first using previous examples.
+a1 = LD4L::OpenAnnotationRDF::Annotation.resume(RDF::URI('http://localhost/c10'))
+# => #<LD4L::OpenAnnotationRDF::CommentAnnotation:0x3fdd8267adc8(default)>
+
+a2 = LD4L::OpenAnnotationRDF::Annotation.resume(RDF::URI('http://localhost/t10'))
+# => #<LD4L::OpenAnnotationRDF::TagAnnotation:0x3fdd826073f0(default)>
+
+a3 = LD4L::OpenAnnotationRDF::Annotation.resume(RDF::URI('http://localhost/st10'))
+# => #<LD4L::OpenAnnotationRDF::SemanticTagAnnotation:0x3fdd8259c7a8(default)>
+
+
+## Using string URI
+# Create the annotations first using previous examples.
+a1 = LD4L::OpenAnnotationRDF::Annotation.resume('http://localhost/c10')
+# => #<LD4L::OpenAnnotationRDF::CommentAnnotation:0x3fdd8267adc8(default)>
+
+a2 = LD4L::OpenAnnotationRDF::Annotation.resume('http://localhost/t10')
+# => #<LD4L::OpenAnnotationRDF::TagAnnotation:0x3fdd826073f0(default)>
+
+a3 = LD4L::OpenAnnotationRDF::Annotation.resume('http://localhost/st10')
+# => #<LD4L::OpenAnnotationRDF::SemanticTagAnnotation:0x3fdd8259c7a8(default)>
+
+
+## Using localname expanded using configured base_uri
+# Create the annotations first using previous examples.
+a1 = LD4L::OpenAnnotationRDF::Annotation.resume('c10')
+# => #<LD4L::OpenAnnotationRDF::CommentAnnotation:0x3fdd8267adc8(default)>
+
+a2 = LD4L::OpenAnnotationRDF::Annotation.resume('t10')
+# => #<LD4L::OpenAnnotationRDF::TagAnnotation:0x3fdd826073f0(default)>
+
+a3 = LD4L::OpenAnnotationRDF::Annotation.resume('st10')
+# => #<LD4L::OpenAnnotationRDF::SemanticTagAnnotation:0x3fdd8259c7a8(default)>
+```
 
 ### Configurations
 
