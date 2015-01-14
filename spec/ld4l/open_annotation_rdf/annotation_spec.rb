@@ -173,79 +173,177 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
       LD4L::FoafRDF::Person.new('p4')
     end
 
-    it "should resume an instance of CommentAnnotation" do
-      a_time = Time::now.strftime("%Y-%m-%dT%H:%M:%S.%L%z")
-      ca = LD4L::OpenAnnotationRDF::CommentAnnotation.new('ca_1')
-      ca.hasTarget = RDF::URI("http://example.org/bibref/br3")
-      ca.setComment("This is a comment.")
-      ca.annotatedBy = a_person
-      ca.annotatedAt = a_time
-      ca.persist!
-      expect(ca).to be_persisted
-      uri = ca.rdf_subject
+    context "when annotation body is persisted" do
+      it "should resume an instance of CommentAnnotation and its body" do
+        a_time = Time::now.strftime("%Y-%m-%dT%H:%M:%S.%L%z")
+        ca = LD4L::OpenAnnotationRDF::CommentAnnotation.new('ca_1')
+        ca.hasTarget = RDF::URI("http://example.org/bibref/br3")
+        ca.setComment("This is a comment.")
+        ca.annotatedBy = a_person
+        ca.annotatedAt = a_time
+        ca.persist!
+        expect(ca).to be_persisted
+        uri = ca.rdf_subject
 
-      a = LD4L::OpenAnnotationRDF::Annotation.resume(uri)
-      expect(a).to be_a_kind_of(LD4L::OpenAnnotationRDF::CommentAnnotation)
-      expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
-      expect(a.annotatedBy.first).to eq a_person
-      expect(a.annotatedAt.first).to eq a_time
-      expect(a.motivatedBy.first).to eq RDFVocabularies::OA.commenting
+        a = LD4L::OpenAnnotationRDF::Annotation.resume(uri)
+        expect(a).to be_a_kind_of(LD4L::OpenAnnotationRDF::CommentAnnotation)
+        expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
+        expect(a.annotatedBy.first).to eq a_person
+        expect(a.annotatedAt.first).to eq a_time
+        expect(a.motivatedBy.first).to eq RDFVocabularies::OA.commenting
 
-      b = a.getBody
-      expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::CommentBody)
-      expect(b.type).to include RDFVocabularies::DCTYPES.Text
-      expect(b.type).to include RDFVocabularies::CNT.ContentAsText
-      expect(b.content).to eq ["This is a comment."]
-      expect(b.format.first).to eq "text/plain"
+        b = a.getBody
+        expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::CommentBody)
+        expect(b.type).to include RDFVocabularies::DCTYPES.Text
+        expect(b.type).to include RDFVocabularies::CNT.ContentAsText
+        expect(b.content).to eq ["This is a comment."]
+        expect(b.format.first).to eq "text/plain"
+      end
+
+      it "should resume an instance of TagAnnotation and its body" do
+        a_time = Time::now.strftime("%Y-%m-%dT%H:%M:%S.%L%z")
+        ta = LD4L::OpenAnnotationRDF::TagAnnotation.new('ta_2')
+        ta.hasTarget = RDF::URI("http://example.org/bibref/br3")
+        ta.setTag("good")
+        ta.annotatedBy = a_person
+        ta.annotatedAt = a_time
+        ta.persist!
+        expect(ta).to be_persisted
+        uri = ta.rdf_subject
+
+        a = LD4L::OpenAnnotationRDF::Annotation.resume(uri)
+        expect(a).to be_a_kind_of(LD4L::OpenAnnotationRDF::TagAnnotation)
+        expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
+        expect(a.annotatedBy.first).to eq a_person
+        expect(a.annotatedAt.first).to eq a_time
+        expect(a.motivatedBy.first).to eq RDFVocabularies::OA.tagging
+
+        b = a.getBody
+        expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::TagBody)
+        expect(b.type).to include RDFVocabularies::OA.Tag
+        expect(b.type).to include RDFVocabularies::CNT.ContentAsText
+        expect(b.tag).to eq ["good"]
+      end
+
+      it "should resume an instance of SemanticTagAnnotation and its body" do
+        a_time = Time::now.strftime("%Y-%m-%dT%H:%M:%S.%L%z")
+        sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('sta_3')
+        sta.hasTarget = RDF::URI("http://example.org/bibref/br3")
+        sta.setTerm('http://example.org/term/3')
+        sta.annotatedBy = a_person
+        sta.annotatedAt = a_time
+        sta.persist!
+        expect(sta).to be_persisted
+        uri = sta.rdf_subject
+
+        a = LD4L::OpenAnnotationRDF::Annotation.resume(uri)
+        expect(a).to be_a_kind_of(LD4L::OpenAnnotationRDF::SemanticTagAnnotation)
+        expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
+        expect(a.annotatedBy.first).to eq a_person
+        expect(a.annotatedAt.first).to eq a_time
+        expect(a.motivatedBy.first).to eq RDFVocabularies::OA.tagging
+
+        b = a.getBody
+        expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::SemanticTagBody)
+        expect(b.type).to include RDFVocabularies::OA.SemanticTag
+        expect(b.rdf_subject.to_s).to eq('http://example.org/term/3')
+      end
     end
 
-    it "should resume an instance of TagAnnotation" do
-      a_time = Time::now.strftime("%Y-%m-%dT%H:%M:%S.%L%z")
-      ta = LD4L::OpenAnnotationRDF::TagAnnotation.new('ta_2')
-      ta.hasTarget = RDF::URI("http://example.org/bibref/br3")
-      ta.setTag("good")
-      ta.annotatedBy = a_person
-      ta.annotatedAt = a_time
-      ta.persist!
-      expect(ta).to be_persisted
-      uri = ta.rdf_subject
+    context "when annotation body is a blank node" do
+      it "should resume an instance of CommentAnnotation and a blank node body" do
+        a_time = Time::now.strftime("%Y-%m-%dT%H:%M:%S.%L%z")
+        ca = LD4L::OpenAnnotationRDF::CommentAnnotation.new('ca_1')
+        ca.hasTarget = RDF::URI("http://example.org/bibref/br3")
 
-      a = LD4L::OpenAnnotationRDF::Annotation.resume(uri)
-      expect(a).to be_a_kind_of(LD4L::OpenAnnotationRDF::TagAnnotation)
-      expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
-      expect(a.annotatedBy.first).to eq a_person
-      expect(a.annotatedAt.first).to eq a_time
-      expect(a.motivatedBy.first).to eq RDFVocabularies::OA.tagging
+        cb = LD4L::OpenAnnotationRDF::CommentBody.new    # create body as blank node
+        cb.content = "BLANK NODE COMMENT"
+        cb.format  = "text/plain"
+        cb.persist!
+        expect(cb).to be_persisted
 
-      b = a.getBody
-      expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::TagBody)
-      expect(b.type).to include RDFVocabularies::OA.Tag
-      expect(b.type).to include RDFVocabularies::CNT.ContentAsText
-      expect(b.tag).to eq ["good"]
-    end
+        ca.hasBody = cb
+        ca.annotatedBy = a_person
+        ca.annotatedAt = a_time
+        ca.persist!
+        expect(ca).to be_persisted
+        uri = ca.rdf_subject
 
-    it "should resume an instance of SemanticTagAnnotation" do
-      a_time = Time::now.strftime("%Y-%m-%dT%H:%M:%S.%L%z")
-      sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('sta_3')
-      sta.hasTarget = RDF::URI("http://example.org/bibref/br3")
-      sta.setTerm('http://example.org/term/3')
-      sta.annotatedBy = a_person
-      sta.annotatedAt = a_time
-      sta.persist!
-      expect(sta).to be_persisted
-      uri = sta.rdf_subject
+        a = LD4L::OpenAnnotationRDF::Annotation.resume(uri)
+        expect(a).to be_a_kind_of(LD4L::OpenAnnotationRDF::CommentAnnotation)
+        expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
+        expect(a.annotatedBy.first).to eq a_person
+        expect(a.annotatedAt.first).to eq a_time
+        expect(a.motivatedBy.first).to eq RDFVocabularies::OA.commenting
 
-      a = LD4L::OpenAnnotationRDF::Annotation.resume(uri)
-      expect(a).to be_a_kind_of(LD4L::OpenAnnotationRDF::SemanticTagAnnotation)
-      expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
-      expect(a.annotatedBy.first).to eq a_person
-      expect(a.annotatedAt.first).to eq a_time
-      expect(a.motivatedBy.first).to eq RDFVocabularies::OA.tagging
+        b = a.getBody
+        expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::CommentBody)
+        expect(b.type).to include RDFVocabularies::DCTYPES.Text
+        expect(b.type).to include RDFVocabularies::CNT.ContentAsText
+        expect(b.content).to eq ["BLANK NODE COMMENT"]
+        expect(b.format.first).to eq "text/plain"
+      end
 
-      b = a.getBody
-      expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::SemanticTagBody)
-      expect(b.type).to include RDFVocabularies::OA.SemanticTag
-      expect(b.rdf_subject.to_s).to eq('http://example.org/term/3')
+      it "should resume an instance of TagAnnotation and a blank node body" do
+        a_time = Time::now.strftime("%Y-%m-%dT%H:%M:%S.%L%z")
+        ta = LD4L::OpenAnnotationRDF::TagAnnotation.new('ta_4')
+        ta.hasTarget = RDF::URI("http://example.org/bibref/br3")
+        ta.annotatedBy = a_person
+        ta.annotatedAt = a_time
+
+        tb = LD4L::OpenAnnotationRDF::TagBody.new    # create body as blank node
+        tb.tag = "BLANK_NODE_TAG"
+        tb.persist!
+        expect(tb).to be_persisted
+
+        ta.hasBody = tb
+        ta.persist!
+        expect(ta).to be_persisted
+        uri = ta.rdf_subject
+
+        a = LD4L::OpenAnnotationRDF::Annotation.resume(uri)
+        expect(a).to be_a_kind_of(LD4L::OpenAnnotationRDF::TagAnnotation)
+        expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
+        expect(a.annotatedBy.first).to eq a_person
+        expect(a.annotatedAt.first).to eq a_time
+        expect(a.motivatedBy.first).to eq RDFVocabularies::OA.tagging
+
+        b = a.getBody
+        expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::TagBody)
+        expect(b.type).to include RDFVocabularies::OA.Tag
+        expect(b.type).to include RDFVocabularies::CNT.ContentAsText
+        expect(b.tag).to eq ["BLANK_NODE_TAG"]
+      end
+
+      it "should resume an instance of SemanticTagAnnotation and body object is missing" do
+
+
+        # SKIPPED FOR REWRITE FOR BLANK NODE
+        # pending ("rewrite for blank node")
+
+
+        a_time = Time::now.strftime("%Y-%m-%dT%H:%M:%S.%L%z")
+        sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('sta_3')
+        sta.hasTarget = RDF::URI("http://example.org/bibref/br3")
+        sta.hasBody = RDF::URI('http://example.org/term/3')     # don't create a cooresponding body object
+        sta.annotatedBy = a_person
+        sta.annotatedAt = a_time
+        sta.persist!
+        expect(sta).to be_persisted
+        uri = sta.rdf_subject
+
+        a = LD4L::OpenAnnotationRDF::Annotation.resume(uri)
+        expect(a).to be_a_kind_of(LD4L::OpenAnnotationRDF::SemanticTagAnnotation)
+        expect(a.hasTarget.first.rdf_subject.to_s).to eq "http://example.org/bibref/br3"
+        expect(a.annotatedBy.first).to eq a_person
+        expect(a.annotatedAt.first).to eq a_time
+        expect(a.motivatedBy.first).to eq RDFVocabularies::OA.tagging
+
+        b = a.getBody
+        expect(b).to be_a_kind_of(LD4L::OpenAnnotationRDF::SemanticTagBody)
+        expect(b.type).to include RDFVocabularies::OA.SemanticTag
+        expect(b.rdf_subject.to_s).to eq('http://example.org/term/3')
+      end
     end
   end
 

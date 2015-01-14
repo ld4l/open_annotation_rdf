@@ -4,10 +4,14 @@ module LD4L
 
       @localname_prefix = "sta"
 
+      property :hasBody, :predicate => RDFVocabularies::OA.hasBody, :class_name => LD4L::OpenAnnotationRDF::SemanticTagBody
+
+
       # USAGE: Use setTerm to set the hasBody property to be the URI of the controlled vocabulary term that
       #        is the annotation.
 
       # TODO: Should a semantic tag be destroyed when the last annotation referencing the term is destroyed?
+      # TODO: What if other triples have been attached beyond the type?
 
       ##
       # Set the hasBody property to the URI of the controlled vocabulary term that is the annotation and
