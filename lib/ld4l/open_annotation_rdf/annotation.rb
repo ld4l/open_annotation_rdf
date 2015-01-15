@@ -23,7 +23,9 @@ module LD4L
 
         # get motivatedBy
         m = a.get_values(:motivatedBy)
-        return a    unless m.kind_of?(Array) && m.size > 0 && m.first.kind_of?(RDF::Vocabulary::Term)
+        # TODO:  Should m's class be validated?  I've seen it be RDF::Vocabulary::Term and RDF::URI.  For now, removing the validation.
+        return a    unless m.kind_of?(Array) && m.size > 0
+        # return a    unless m.kind_of?(Array) && m.size > 0 && (m.first.kind_of?(RDF::Vocabulary::Term) || m.first.kind_of?(RDF::URI)
 
         # motivatedBy is set
         m_uri = m.first
