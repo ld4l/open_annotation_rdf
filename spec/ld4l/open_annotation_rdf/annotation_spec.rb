@@ -345,6 +345,114 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
         expect(b.rdf_subject.to_s).to eq('http://example.org/term/3')
       end
     end
+
+    context "when loading from graph" do
+      context "and has blank node for body" do
+        context "and triples represent a comment annotation" do
+          before(:each) do
+            @anno_url = "http://my_oa_store/COMMENT_ANNO"
+            @comment_value = "This is a comment."
+            ttl = "<#{@anno_url}> a <http://www.w3.org/ns/oa#Annotation>;
+                     <http://www.w3.org/ns/oa#hasBody> [
+                       a <http://purl.org/dc/dcmitype/Text>,
+                         <http://www.w3.org/2011/content#ContentAsText>;
+                       <http://www.w3.org/2011/content#chars> \"#{@comment_value}\" ;
+                       <http://purl.org/dc/terms/format> \"text/plain\"
+                     ];
+                   <http://www.w3.org/ns/oa#hasTarget> <http://searchworks.stanford.edu/view/666>;
+                   <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#commenting> ."
+
+            anno_graph = RDF::Graph.new.from_ttl ttl
+            r = ActiveTriples::Repositories.repositories[:default]
+            r << anno_graph
+            anno_uri = RDF::URI.new(@anno_url)
+            @comment_anno = LD4L::OpenAnnotationRDF::Annotation.resume(anno_uri)
+          end
+          it "populates LD4L::OpenAnnotationRDF::TagAnnotation properly" do
+            expect(@comment_anno.rdf_subject.to_s).to eq @anno_url
+            expect(@comment_anno).to be_a LD4L::OpenAnnotationRDF::CommentAnnotation
+            expect(@comment_anno.type).to include(RDFVocabularies::OA.Annotation)
+            expect(@comment_anno.motivatedBy).to include(RDFVocabularies::OA.commenting)
+            expect(@comment_anno.hasTarget.first.rdf_subject).to eq RDF::URI.new("http://searchworks.stanford.edu/view/666")
+          end
+          it "populates Tag bodies properly" do
+            body = @comment_anno.hasBody.first
+            expect(body).to be_a LD4L::OpenAnnotationRDF::CommentBody
+            expect(body.content.first).to eq @comment_value
+            expect(body.type).to include(RDFVocabularies::CNT.ContentAsText)
+            expect(body.type).to include(RDFVocabularies::DCTYPES.Text)
+          end
+        end
+
+        context "and triples represent a tag annotation" do
+          before(:each) do
+            @anno_url = "http://my_oa_store/TAG_ANNO"
+            @tag_value = "blue"
+            ttl = "<#{@anno_url}> a <http://www.w3.org/ns/oa#Annotation>;
+                     <http://www.w3.org/ns/oa#hasBody> [
+                       a <http://purl.org/dc/dcmitype/Text>,
+                         <http://www.w3.org/2011/content#ContentAsText>,
+                         <http://www.w3.org/ns/oa#Tag>;
+                       <http://www.w3.org/2011/content#chars> \"#{@tag_value}\" ;
+                       <http://purl.org/dc/terms/format> \"text/plain\"
+                     ];
+                   <http://www.w3.org/ns/oa#hasTarget> <http://searchworks.stanford.edu/view/666>;
+                   <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#tagging> ."
+
+            anno_graph = RDF::Graph.new.from_ttl ttl
+            r = ActiveTriples::Repositories.repositories[:default]
+            r << anno_graph
+            anno_uri = RDF::URI.new(@anno_url)
+            @tag_anno = LD4L::OpenAnnotationRDF::Annotation.resume(anno_uri)
+          end
+          it "populates LD4L::OpenAnnotationRDF::TagAnnotation properly" do
+            expect(@tag_anno.rdf_subject.to_s).to eq @anno_url
+            expect(@tag_anno).to be_a LD4L::OpenAnnotationRDF::TagAnnotation
+            expect(@tag_anno.type).to include(RDFVocabularies::OA.Annotation)
+            expect(@tag_anno.motivatedBy).to include(RDFVocabularies::OA.tagging)
+            expect(@tag_anno.hasTarget.first.rdf_subject).to eq RDF::URI.new("http://searchworks.stanford.edu/view/666")
+          end
+          it "populates Tag bodies properly" do
+            body = @tag_anno.hasBody.first
+            expect(body).to be_a LD4L::OpenAnnotationRDF::TagBody
+            expect(body.tag.first).to eq @tag_value
+            expect(body.type).to include(RDFVocabularies::OA.Tag)
+            expect(body.type).to include(RDFVocabularies::CNT.ContentAsText)
+            expect(body.type).to include(RDFVocabularies::DCTYPES.Text)
+          end
+        end
+
+        context "and triples represent a semantic tag annotation" do
+          before(:each) do
+            @anno_url = "http://my_oa_store/SEMANTIC_TAG_ANNO"
+            @term_url = "http://example.org/terms/foo"
+            ttl = "<#{@anno_url}> a <http://www.w3.org/ns/oa#Annotation>;
+                   <http://www.w3.org/ns/oa#hasBody> <#{@term_url}>;
+                   <http://www.w3.org/ns/oa#hasTarget> <http://searchworks.stanford.edu/view/666>;
+                   <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#tagging> ."
+
+            anno_graph = RDF::Graph.new.from_ttl ttl
+            r = ActiveTriples::Repositories.repositories[:default]
+            r << anno_graph
+            anno_uri = RDF::URI.new(@anno_url)
+            @semantic_tag_anno = LD4L::OpenAnnotationRDF::Annotation.resume(anno_uri)
+          end
+          it "populates LD4L::OpenAnnotationRDF::TagAnnotation properly" do
+            expect(@semantic_tag_anno.rdf_subject.to_s).to eq @anno_url
+            expect(@semantic_tag_anno).to be_a LD4L::OpenAnnotationRDF::SemanticTagAnnotation
+            expect(@semantic_tag_anno.type).to include(RDFVocabularies::OA.Annotation)
+            expect(@semantic_tag_anno.motivatedBy).to include(RDFVocabularies::OA.tagging)
+            expect(@semantic_tag_anno.hasTarget.first.rdf_subject).to eq RDF::URI.new("http://searchworks.stanford.edu/view/666")
+          end
+          it "populates Tag bodies properly" do
+            body = @semantic_tag_anno.hasBody.first
+            expect(body.rdf_subject.to_s).to eq @term_url
+            expect(body).to be_a LD4L::OpenAnnotationRDF::SemanticTagBody
+            expect(body.type).to include(RDFVocabularies::OA.SemanticTag)
+          end
+        end
+      end
+    end
   end
 
   # -----------------------------------------------
