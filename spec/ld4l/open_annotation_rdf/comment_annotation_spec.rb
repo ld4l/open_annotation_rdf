@@ -180,6 +180,55 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
   # END -- Test attributes specific to this model
   # ----------------------------------------------
 
+  # -------------------------------------------------
+  #  START -- Test this model's initializer
+  # -------------------------------------------------
+
+  describe '#initialize' do
+    context 'loading from graph' do
+      before(:each) do
+        anno_url = "http://my_oa_store/foocom"
+        @target_url = "http://searchworks.stanford.edu/view/666"
+        @comment_text = "I am a comment!"
+        @format = "text/plain"
+        ttl = "<#{anno_url}> a <http://www.w3.org/ns/oa#Annotation>;
+                <http://www.w3.org/ns/oa#hasBody> [
+                  a <http://purl.org/dc/dcmitype/Text>,
+                    <http://www.w3.org/2011/content#ContentAsText>;
+                  <http://www.w3.org/2011/content#chars> \"#{@comment_text}\" ;
+                  <http://purl.org/dc/terms/format> \"#{@format}\"
+                ];
+                <http://www.w3.org/ns/oa#hasTarget> <#{@target_url}>;
+                <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#commenting> ."
+        anno_graph = RDF::Graph.new.from_ttl ttl
+        r = ActiveTriples::Repositories.repositories[LD4L::OpenAnnotationRDF::CommentAnnotation.repository]
+        r << anno_graph
+        anno_uri = RDF::URI.new(anno_url)
+        @comment_anno = LD4L::OpenAnnotationRDF::CommentAnnotation.new(anno_uri)
+      end
+      it "populates LD4L::OpenAnnotationRDF::TagAnnotation properly" do
+        expect(@comment_anno).to be_a LD4L::OpenAnnotationRDF::CommentAnnotation
+        expect(@comment_anno.type).to eq [RDFVocabularies::OA.Annotation]
+        expect(@comment_anno.motivatedBy).to eq [RDFVocabularies::OA.commenting]
+        expect(@comment_anno.hasTarget.first.rdf_subject).to eq RDF::URI.new(@target_url)
+      end
+      it "populates CommentBody properly" do
+        body = @comment_anno.hasBody.first
+        expect(body).to be_a LD4L::OpenAnnotationRDF::CommentBody
+        expect(body.content).to eq [@comment_text]
+        expect(body.format).to eq [@format]
+        expect(body.type).to include RDFVocabularies::CNT.ContentAsText
+        expect(body.type).to include RDFVocabularies::DCTYPES.Text
+        expect(body.type).not_to include RDFVocabularies::OA.Tag
+        expect(body.type.size).to eq 2
+      end
+    end
+  end
+
+  # -------------------------------------------------
+  #  End -- Test this model's initializer
+  # -------------------------------------------------
+
 
   describe "#persisted?" do
     context 'with a repository' do
