@@ -255,7 +255,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
 
               <#{@body_url}> a <http://www.w3.org/ns/oa#SemanticTag> ."
         anno_graph = RDF::Graph.new.from_ttl ttl
-        r = ActiveTriples::Repositories.repositories[LD4L::OpenAnnotationRDF::TagAnnotation.repository]
+        r = ActiveTriples::Repositories.repositories[LD4L::OpenAnnotationRDF::SemanticTagAnnotation.repository]
         r << anno_graph
         anno_uri = RDF::URI.new(anno_url)
         @sem_tag_anno = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new(anno_uri)
