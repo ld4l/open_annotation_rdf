@@ -290,6 +290,53 @@ describe 'LD4L::OpenAnnotationRDF::TagAnnotation' do
   #  END -- Test attributes specific to this model
   # -----------------------------------------------
 
+  # -------------------------------------------------
+  #  START -- Test this model's initializer
+  # -------------------------------------------------
+
+  describe '#initialize' do
+    context 'loading from graph' do
+      before(:each) do
+        anno_url = "http://my_oa_store/foo"
+        @target_url = "http://searchworks.stanford.edu/view/666"
+        ttl = "<#{anno_url}> a <http://www.w3.org/ns/oa#Annotation>;
+                <http://www.w3.org/ns/oa#hasBody> [
+                  a <http://purl.org/dc/dcmitype/Text>,
+                    <http://www.w3.org/2011/content#ContentAsText>,
+                    <http://www.w3.org/ns/oa#Tag>;
+                  <http://www.w3.org/2011/content#chars> \"blue\" ;
+                  <http://purl.org/dc/terms/format> \"text/plain\"
+                ];
+                <http://www.w3.org/ns/oa#hasTarget> <#{@target_url}>;
+                <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#tagging> ."
+        anno_graph = RDF::Graph.new.from_ttl ttl
+        r = ActiveTriples::Repositories.repositories[LD4L::OpenAnnotationRDF::TagAnnotation.repository]
+        r << anno_graph
+        anno_uri = RDF::URI.new(anno_url)
+        @tag_anno = LD4L::OpenAnnotationRDF::TagAnnotation.new(anno_uri)
+      end
+      it "populates LD4L::OpenAnnotationRDF::TagAnnotation properly" do
+        expect(@tag_anno).to be_a LD4L::OpenAnnotationRDF::TagAnnotation
+        expect(@tag_anno.type).to eq [RDFVocabularies::OA.Annotation]
+        expect(@tag_anno.motivatedBy).to eq [RDFVocabularies::OA.tagging]
+        expect(@tag_anno.hasTarget.first.rdf_subject).to eq RDF::URI.new(@target_url)
+      end
+      it "populates TagBody properly" do
+        body = @tag_anno.hasBody.first
+        expect(body).to be_a LD4L::OpenAnnotationRDF::TagBody
+        expect(body.tag).to eq ["blue"]
+        expect(body.type).to include RDFVocabularies::OA.Tag
+        expect(body.type).to include RDFVocabularies::CNT.ContentAsText
+        expect(body.type).to include RDFVocabularies::DCTYPES.Text
+        expect(body.type.size).to eq 3
+        expect{body.format}.to raise_error(NoMethodError) # not in Tag model
+      end
+    end
+  end
+
+  # -------------------------------------------------
+  #  End -- Test this model's initializer
+  # -------------------------------------------------
 
   describe "#persisted?" do
     context 'with a repository' do
