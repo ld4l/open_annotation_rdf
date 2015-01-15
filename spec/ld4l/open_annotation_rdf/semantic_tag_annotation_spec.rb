@@ -238,6 +238,48 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
   #  END -- Test attributes specific to this model
   # -----------------------------------------------
 
+  # -------------------------------------------------
+  #  START -- Test this model's initializer
+  # -------------------------------------------------
+
+  describe '#initialize' do
+    context 'loading from graph' do
+      before(:each) do
+        anno_url = "http://my_oa_store/semfoo"
+        @body_url = "http://dbpedia.org/resource/Love"
+        @target_url = "http://searchworks.stanford.edu/view/666"
+        ttl = "<#{anno_url}> a <http://www.w3.org/ns/oa#Annotation>;
+                 <http://www.w3.org/ns/oa#hasBody> <#{@body_url}>;
+                 <http://www.w3.org/ns/oa#hasTarget> <#{@target_url}>;
+                 <http://www.w3.org/ns/oa#motivatedBy> <http://www.w3.org/ns/oa#tagging> .
+
+              <#{@body_url}> a <http://www.w3.org/ns/oa#SemanticTag> ."
+        anno_graph = RDF::Graph.new.from_ttl ttl
+        r = ActiveTriples::Repositories.repositories[LD4L::OpenAnnotationRDF::TagAnnotation.repository]
+        r << anno_graph
+        anno_uri = RDF::URI.new(anno_url)
+        @sem_tag_anno = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new(anno_uri)
+      end
+      it "populates LD4L::OpenAnnotationRDF::TagAnnotation properly" do
+        expect(@sem_tag_anno).to be_a LD4L::OpenAnnotationRDF::SemanticTagAnnotation
+        expect(@sem_tag_anno.type).to eq [RDFVocabularies::OA.Annotation]
+        expect(@sem_tag_anno.motivatedBy).to eq [RDFVocabularies::OA.tagging]
+        expect(@sem_tag_anno.hasTarget.first.rdf_subject).to eq RDF::URI.new(@target_url)
+      end
+      it "populates SemanticTagBody properly" do
+        body = @sem_tag_anno.hasBody.first
+        expect(body).to be_a LD4L::OpenAnnotationRDF::SemanticTagBody
+        expect(body.rdf_subject).to eq RDF::URI.new(@body_url)
+        expect(body.type).to eq [RDFVocabularies::OA.SemanticTag]
+        expect(body.type).not_to include(RDFVocabularies::OA.Tag)
+        expect(body.type).not_to include(RDFVocabularies::OA.ContentAsText)
+      end
+    end
+  end
+
+  # -------------------------------------------------
+  #  End -- Test this model's initializer
+  # -------------------------------------------------
 
   describe "#persisted?" do
     context 'with a repository' do
