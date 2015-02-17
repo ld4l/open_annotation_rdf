@@ -28,14 +28,14 @@ module LD4L
         tag_uri = tb.rdf_subject
 
         # find usage by Annotations
-        graph = ActiveTriples::Repositories.repositories[repository]
+        repo = ActiveTriples::Repositories.repositories[repository]
         query = RDF::Query.new({
                                    :annotation => {
                                        RDF.type =>  RDFVocabularies::OA.Annotation,
                                        RDFVocabularies::OA.hasBody => tag_uri,
                                    }
                                })
-        results = query.execute(graph)
+        results = query.execute(repo)
 
         # process results
         annotations = []
@@ -54,7 +54,7 @@ module LD4L
         raise ArgumentError, 'Argument must be a string with at least one character'  unless
             tag_value.kind_of?(String) && tag_value.size > 0
 
-        graph = ActiveTriples::Repositories.repositories[repository]
+        repo = ActiveTriples::Repositories.repositories[repository]
         query = RDF::Query.new({
           :tagbody => {
             RDF.type =>  RDFVocabularies::OA.Tag,
@@ -63,7 +63,7 @@ module LD4L
         })
 
         tagbody = nil
-        results = query.execute(graph)
+        results = query.execute(repo)
         unless( results.empty? )
           tagbody_uri = results[0].to_hash[:tagbody]
           tagbody = LD4L::OpenAnnotationRDF::TagBody.new(tagbody_uri)

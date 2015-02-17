@@ -27,7 +27,7 @@ module LD4L
         term_uri = RDF::URI(term_uri) unless term_uri.kind_of?(RDF::URI)
 
         # find usage by Annotations
-        graph = ActiveTriples::Repositories.repositories[repository]
+        repo = ActiveTriples::Repositories.repositories[repository]
         query = RDF::Query.new({
                                    :annotation => {
                                        RDF.type =>  RDFVocabularies::OA.Annotation,
@@ -35,7 +35,7 @@ module LD4L
                                    }
                                })
         annotations = []
-        results = query.execute(graph)
+        results = query.execute(repo)
         results.each { |r| annotations << r.to_hash[:annotation] }
         annotations
       end

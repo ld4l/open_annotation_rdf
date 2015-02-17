@@ -75,6 +75,36 @@ module LD4L
         body_persisted = persisted && @body ? @body.persist! : false    # persist body
         persisted
       end
+
+      ##
+      # Find annotation by target.
+      #
+      # @param [String, RDF::URI] uri for the work
+      #
+      # @return true if annotation successfully persisted; otherwise, false
+      #
+      # @todo What to return if annotation persists fine, but body fails to persist?
+      def self::find_by_target(target_uri)
+        raise ArgumentError, 'target_uri argument must be a uri string or an instance of RDF::URI'  unless
+            target_uri.kind_of?(String) && target_uri.size > 0 || target_uri.kind_of?(RDF::URI)
+
+        # raise ArgumentError, 'repository argument must be an instance of RDF::Repository'  unless
+        #     repository.kind_of?(RDF::Repository)
+
+        target_uri = RDF::URI(target_uri) unless target_uri.kind_of?(RDF::URI)
+
+        repo = ActiveTriples::Repositories.repositories[repository]
+        query = RDF::Query.new({
+                                   :annotation => {
+                                       RDF.type =>  RDFVocabularies::OA.Annotation,
+                                       RDFVocabularies::OA.hasTarget => target_uri,
+                                   }
+                               })
+        annotations = []
+        results = query.execute(repo)
+        results.each { |r| annotations << r.to_hash[:annotation] }
+        annotations
+      end
     end
   end
 end

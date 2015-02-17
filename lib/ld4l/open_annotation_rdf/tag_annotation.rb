@@ -9,6 +9,15 @@ module LD4L
       # TODO: Should a tag be destroyed when the last annotation referencing the tag is destroyed?
 
       ##
+      # Get the value of the tag stored in a tag annotation.
+      #
+      # @return text value of tag
+      def getTag
+        tags = @body.tag
+        tags && tags.size > 0 ? tags.first : ""   # TODO What is the appropriate default value for a tag?
+      end
+
+      ##
       # Set the hasBody property to the URI of the one and only TagBody holding the tag value. Create a new TagBody
       # if one doesn't exist with this value.
       #

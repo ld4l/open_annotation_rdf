@@ -12,7 +12,7 @@ module LD4L
       #
       # @param [String]
       #
-      # @return instance of SemanticTagBody
+      # @return instance of CommentAnnotation
       def setComment(comment)
         @body = LD4L::OpenAnnotationRDF::CommentBody.new(
             ActiveTriples::LocalName::Minter.generate_local_name(
@@ -22,6 +22,15 @@ module LD4L
         @body.format  = "text/plain"
         set_value(:hasBody, @body)
         @body
+      end
+
+      ##
+      # Get the value of the comment stored in a comment annotation.
+      #
+      # @return text value of comment
+      def getComment
+        comments = @body.content
+        comments && comments.size > 0 ? comments.first : ""
       end
 
       ##
