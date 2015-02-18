@@ -14,6 +14,15 @@ module LD4L
       # TODO: What if other triples have been attached beyond the type?
 
       ##
+      # Get the term URI of the semantic tag body.
+      #
+      # @return the term URI
+      def getTerm
+        # return existing body if term is unchanged
+        @body ? @body.rdf_subject : nil
+      end
+
+      ##
       # Set the hasBody property to the URI of the controlled vocabulary term that is the annotation and
       # create the semantic tag body instance identifying the term as a semantic tag annotation.
       #
