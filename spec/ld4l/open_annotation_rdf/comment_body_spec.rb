@@ -49,7 +49,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
       end
 
       it 'should not be settable' do
-        expect{ subject.set_subject! RDF::URI('http://example.org/moomin2') }.to raise_error
+        expect{ subject.set_subject! RDF::URI('http://example.org/moomin2') }.to raise_error(RuntimeError, 'Refusing update URI when one is already assigned!')
       end
     end
   end
@@ -61,45 +61,58 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
 
   describe 'type' do
     it "should be set to text and ContentAsText from new" do
-      expect(subject.type.size).to eq 2
-      expect(subject.type).to include RDFVocabularies::DCTYPES.Text
-      expect(subject.type).to include RDFVocabularies::CNT.ContentAsText
+      expected_results = subject.type
+      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expect(expected_results.size).to eq 2
+      expect(expected_results).to include RDFVocabularies::DCTYPES.Text
+      expect(expected_results).to include RDFVocabularies::CNT.ContentAsText
     end
 
     it "should be settable" do
       subject.type = RDFVocabularies::DCTYPES.Text
-      expect(subject.type.size).to eq 1
-      expect(subject.type.first).to eq RDFVocabularies::DCTYPES.Text
+      expected_results = subject.type
+      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expect(expected_results.size).to eq 1
+      expect(expected_results).to include RDFVocabularies::DCTYPES.Text
     end
 
     it "should be settable to multiple values" do
       t = [RDFVocabularies::DCTYPES.Text, RDFVocabularies::CNT.ContentAsText]
       subject.set_value(:type,t)
-      expect(subject.type.size).to eq 2
-      expect(subject.type).to include RDFVocabularies::DCTYPES.Text
-      expect(subject.type).to include RDFVocabularies::CNT.ContentAsText
+      expected_results = subject.type
+      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expect(expected_results.size).to eq 2
+      expect(expected_results).to include RDFVocabularies::DCTYPES.Text
+      expect(expected_results).to include RDFVocabularies::CNT.ContentAsText
     end
 
     it "should be changeable" do
       subject.type = RDFVocabularies::DCTYPES.Text
       subject.type = RDFVocabularies::CNT.ContentAsText
-      expect(subject.type.size).to eq 1
-      expect(subject.type.first).to eq RDFVocabularies::CNT.ContentAsText
+      expected_results = subject.type
+      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expect(expected_results.size).to eq 1
+      expect(expected_results).to include RDFVocabularies::CNT.ContentAsText
     end
 
     it "should be changeable for multiple values" do
       t = [RDFVocabularies::DCTYPES.Text, RDFVocabularies::CNT.ContentAsText]
       subject.set_value(:type,t)
-      expect(subject.type.size).to eq 2
-      expect(subject.type).to include RDFVocabularies::DCTYPES.Text
-      expect(subject.type).to include RDFVocabularies::CNT.ContentAsText
+      expected_results = subject.type
+      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expect(expected_results.size).to eq 2
+      expect(expected_results).to include RDFVocabularies::DCTYPES.Text
+      expect(expected_results).to include RDFVocabularies::CNT.ContentAsText
+
       t = subject.get_values(:type)
       t[0] = RDFVocabularies::OA.Tag           # dummy type for testing
       t[1] = RDFVocabularies::OA.SemanticTag   # dummy type for testing
       subject.set_value(:type,t)
-      expect(subject.type.size).to eq 2
-      expect(subject.type).to include RDFVocabularies::OA.Tag
-      expect(subject.type).to include RDFVocabularies::OA.SemanticTag
+      expected_results = subject.type
+      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expect(expected_results.size).to eq 2
+      expect(expected_results).to include RDFVocabularies::OA.Tag
+      expect(expected_results).to include RDFVocabularies::OA.SemanticTag
     end
   end
 
@@ -207,14 +220,23 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
       context "and the item is not a blank node" do
 
         subject {LD4L::OpenAnnotationRDF::CommentBody.new("123")}
+        let(:result) { subject.persist! }
 
         before do
           # Create inmemory repository
           @repo = RDF::Repository.new
           allow(subject.class).to receive(:repository).and_return(nil)
-          allow(subject).to receive(:repository).and_return(@repo)
+          if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
+            allow(subject.persistence_strategy).to receive(:repository).and_return(@repo)
+          else  # < ActiveTriples 0.8
+            allow(subject).to receive(:repository).and_return(@repo)
+          end
           subject.content = "bla"
-          subject.persist!
+          result
+        end
+
+        it "should return true" do
+          expect(result).to eq true
         end
 
         it "should persist to the repository" do
@@ -269,17 +291,6 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
       subject.class.configure :rdf_label => custom_label
       subject << RDF::Statement(subject.rdf_subject, custom_label, RDF::Literal('New Label'))
       expect(subject.rdf_label).to eq ['New Label']
-    end
-  end
-
-  describe '#solrize' do
-    it 'should return a label for bnodes' do
-      expect(subject.solrize).to eq subject.rdf_label
-    end
-
-    it 'should return a string of the resource uri' do
-      subject.set_subject! 'http://example.org/moomin'
-      expect(subject.solrize).to eq 'http://example.org/moomin'
     end
   end
 

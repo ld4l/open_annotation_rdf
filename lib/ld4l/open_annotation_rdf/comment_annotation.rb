@@ -4,6 +4,10 @@ module LD4L
 
       @localname_prefix="ca"
 
+      configure :type => RDFVocabularies::OA.Annotation,
+                :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
+                :repository => :default
+
       property :hasBody, :predicate => RDFVocabularies::OA.hasBody, :class_name => LD4L::OpenAnnotationRDF::CommentBody
 
 

@@ -46,7 +46,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       end
 
       it 'should not be settable' do
-        expect{ subject.set_subject! RDF::URI('http://example.org/moomin2') }.to raise_error
+        expect{ subject.set_subject! RDF::URI('http://example.org/moomin2') }.to raise_error(RuntimeError, 'Refusing update URI when one is already assigned!')
       end
     end
   end
@@ -236,14 +236,23 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       context "and the item is not a blank node" do
 
         subject {LD4L::OpenAnnotationRDF::CommentAnnotation.new("123")}
+        let(:result) { subject.persist! }
 
         before do
           # Create inmemory repository
           @repo = RDF::Repository.new
           allow(subject.class).to receive(:repository).and_return(nil)
-          allow(subject).to receive(:repository).and_return(@repo)
+          if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
+            allow(subject.persistence_strategy).to receive(:repository).and_return(@repo)
+          else  # < ActiveTriples 0.8
+            allow(subject).to receive(:repository).and_return(@repo)
+          end
           subject.motivatedBy = RDFVocabularies::OA.commenting
-          subject.persist!
+          result
+        end
+
+        it "should return true" do
+          expect(result).to eq true
         end
 
         it "should persist to the repository" do
@@ -426,7 +435,8 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
 
   describe '#type' do
     it 'should return the type configured on the parent class' do
-      expect(subject.type).to eq [LD4L::OpenAnnotationRDF::CommentAnnotation.type]
+      expected_result = LD4L::OpenAnnotationRDF::CommentAnnotation.type.kind_of?(Array) ? LD4L::OpenAnnotationRDF::CommentAnnotation.type : [LD4L::OpenAnnotationRDF::CommentAnnotation.type]
+      expect(subject.type).to eq expected_result
     end
 
     it 'should set the type' do
@@ -457,17 +467,6 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       subject.class.configure :rdf_label => custom_label
       subject << RDF::Statement(subject.rdf_subject, custom_label, RDF::Literal('New Label'))
       expect(subject.rdf_label).to eq ['New Label']
-    end
-  end
-
-  describe '#solrize' do
-    it 'should return a label for bnodes' do
-      expect(subject.solrize).to eq subject.rdf_label
-    end
-
-    it 'should return a string of the resource uri' do
-      subject.set_subject! 'http://example.org/moomin'
-      expect(subject.solrize).to eq 'http://example.org/moomin'
     end
   end
 

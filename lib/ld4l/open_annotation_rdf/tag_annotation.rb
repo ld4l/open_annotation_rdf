@@ -4,6 +4,10 @@ module LD4L
 
       @localname_prefix="ta"
 
+      configure :type => RDFVocabularies::OA.Annotation,
+                :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
+                :repository => :default
+
       property :hasBody,  :predicate => RDFVocabularies::OA.hasBody,   :class_name => LD4L::OpenAnnotationRDF::TagBody
 
       # TODO: Should a tag be destroyed when the last annotation referencing the tag is destroyed?
