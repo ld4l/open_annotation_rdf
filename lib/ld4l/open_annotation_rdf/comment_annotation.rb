@@ -18,10 +18,17 @@ module LD4L
       #
       # @return instance of CommentAnnotation
       def setComment(comment)
-        @body = LD4L::OpenAnnotationRDF::CommentBody.new(
-            ActiveTriples::LocalName::Minter.generate_local_name(
-                LD4L::OpenAnnotationRDF::CommentBody, 10, @localname_prefix,
-                LD4L::OpenAnnotationRDF.configuration.localname_minter ))
+        if self.respond_to? 'persistence_strategy'  # >= ActiveTriples 0.8
+          @body ||= LD4L::OpenAnnotationRDF::CommentBody.new(
+              ActiveTriples::LocalName::Minter.generate_local_name(
+                  LD4L::OpenAnnotationRDF::CommentBody, 10, @localname_prefix,
+                  LD4L::OpenAnnotationRDF.configuration.localname_minter),self)
+        else # < ActiveTriples 0.8
+          @body ||= LD4L::OpenAnnotationRDF::CommentBody.new(
+              ActiveTriples::LocalName::Minter.generate_local_name(
+                  LD4L::OpenAnnotationRDF::CommentBody, 10, @localname_prefix,
+                  LD4L::OpenAnnotationRDF.configuration.localname_minter))
+        end
         @body.content = comment
         @body.format  = "text/plain"
         set_value(:hasBody, @body)
@@ -45,6 +52,7 @@ module LD4L
 
         # set motivatedBy
         m = get_values(:motivatedBy)
+        m = m.to_a if Object.const_defined?("ActiveTriples::Relation") && m.kind_of?(ActiveTriples::Relation)
         set_value(:motivatedBy, RDFVocabularies::OA.commenting) unless m.kind_of?(Array) && m.size > 0
 
         # resume CommentBody if it exists

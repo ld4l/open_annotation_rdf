@@ -23,6 +23,8 @@ module LD4L
 
         # get motivatedBy
         m = a.get_values(:motivatedBy)
+        m = m.to_a if Object.const_defined?("ActiveTriples::Relation") && m.kind_of?(ActiveTriples::Relation)
+
         # TODO:  Should m's class be validated?  I've seen it be RDF::Vocabulary::Term and RDF::URI.  For now, removing the validation.
         return a    unless m.kind_of?(Array) && m.size > 0
         # return a    unless m.kind_of?(Array) && m.size > 0 && (m.first.kind_of?(RDF::Vocabulary::Term) || m.first.kind_of?(RDF::URI)
@@ -36,7 +38,7 @@ module LD4L
         # Tagging can be TagAnnotation or SemanticTagAnnotation.  Only way to tell is by checking type of body.
         sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new(uri_or_str)
         stb = sta.getBody
-        return sta                          if stb.type.include?(RDFVocabularies::OA.SemanticTag)
+        return sta                          unless stb.type.include?(RDFVocabularies::OA.Tag) || !stb.type.include?(RDFVocabularies::OA.SemanticTag)
 
         ta = LD4L::OpenAnnotationRDF::TagAnnotation.new(uri_or_str)
         tb = ta.getBody
