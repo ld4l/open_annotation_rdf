@@ -308,7 +308,11 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       end
 
       let(:child) do
-        LD4L::FoafRDF::Person.new('456')
+        if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
+          LD4L::FoafRDF::Person.new('456',subject)
+        else  # < ActiveTriples 0.8
+          LD4L::FoafRDF::Person.new('456')
+        end
       end
 
       it 'should empty the graph and remove it from the parent' do

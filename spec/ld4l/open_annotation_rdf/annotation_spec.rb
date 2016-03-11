@@ -557,7 +557,7 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
       subject << RDF::Statement(RDF::DC.LicenseDocument, RDF::DC.title, 'LICENSE')
     end
 
-    subject { LD4L::FoafRDF::Person.new('456')}
+    subject { LD4L::OpenAnnotationRDF::Annotation.new('123') }
 
     it 'should return true' do
       expect(subject.destroy!).to be true
@@ -571,22 +571,26 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
 
     context 'with a parent' do
       before do
-        parent.annotatedBy = subject
+        subject.annotatedBy = child
       end
 
-      let(:parent) do
-        LD4L::OpenAnnotationRDF::Annotation.new('123')
+      let(:child) do
+        if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
+          LD4L::FoafRDF::Person.new('456',subject)
+        else  # < ActiveTriples 0.8
+          LD4L::FoafRDF::Person.new('456')
+        end
       end
 
       it 'should empty the graph and remove it from the parent' do
-        subject.destroy
-        expect(parent.annotatedBy).to be_empty
+        child.destroy
+        expect(subject.annotatedBy).to be_empty
       end
 
       it 'should remove its whole graph from the parent' do
-        subject.destroy
-        subject.each_statement do |s|
-          expect(parent.statements).not_to include s
+        child.destroy
+        child.each_statement do |s|
+          expect(subject.statements).not_to include s
         end
       end
     end
