@@ -104,7 +104,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
       expect(expected_results).to include RDFVocabularies::DCTYPES.Text
       expect(expected_results).to include RDFVocabularies::CNT.ContentAsText
 
-      t = subject.get_values(:type)
+      t = subject.get_values(:type).to_a
       t[0] = RDFVocabularies::OA.Tag           # dummy type for testing
       t[1] = RDFVocabularies::OA.SemanticTag   # dummy type for testing
       subject.set_value(:type,t)

@@ -110,6 +110,24 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       expect(subject.getBody.rdf_subject.to_s).to match match /http:\/\/localhost\/[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/
       expect(subject.getBody).not_to be_persisted
     end
+
+    it "should re-use body when changing the comment" do
+      subject.setComment('Initial comment value.')
+      expect(subject.getBody).to eq subject.hasBody.first
+      cb = subject.getBody
+      subject.setComment('Changed comment value.')
+      expect(subject.getBody).to eq subject.hasBody.first
+      expect(subject.getBody.object_id).to eq cb.object_id
+    end
+  end
+
+  describe '#getComment' do
+    before do
+      subject.setComment('Test getting a comment.')
+    end
+    it "should get the comment" do
+      expect(subject.getComment).to eq 'Test getting a comment.'
+    end
   end
 
   describe 'annotatedBy' do
@@ -241,12 +259,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
         before do
           # Create inmemory repository
           @repo = RDF::Repository.new
-          allow(subject.class).to receive(:repository).and_return(nil)
-          if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
-            allow(subject.persistence_strategy).to receive(:repository).and_return(@repo)
-          else  # < ActiveTriples 0.8
-            allow(subject).to receive(:repository).and_return(@repo)
-          end
+          ActiveTriples::Repositories.repositories[:default] = @repo
           subject.motivatedBy = RDFVocabularies::OA.commenting
           result
         end
@@ -277,6 +290,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
           end
           it "should persist body to the repository" do
             cb = LD4L::OpenAnnotationRDF::CommentBody.new(subject.getBody.rdf_subject)
+            expect(cb.content).to eq ['I like this.']
             expect(cb).to be_persisted
             expect(subject.getBody.rdf_subject.to_s).to eq cb.rdf_subject.to_s
           end

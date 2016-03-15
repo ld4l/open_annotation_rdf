@@ -18,6 +18,7 @@ module LD4L
       #
       # @return instance of CommentAnnotation
       def setComment(comment)
+        @body ||= hasBody.first if hasBody.size > 0
         if self.respond_to? 'persistence_strategy'  # >= ActiveTriples 0.8
           @body ||= LD4L::OpenAnnotationRDF::CommentBody.new(
               ActiveTriples::LocalName::Minter.generate_local_name(

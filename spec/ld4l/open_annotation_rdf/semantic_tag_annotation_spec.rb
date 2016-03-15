@@ -133,6 +133,15 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
       end
     end
 
+    describe '#getTerm' do
+      before do
+        subject.setTerm('TestTerm')
+      end
+      it "should get the tag" do
+        expect(subject.getTerm).to eq 'TestTerm'
+      end
+    end
+
     context "when term doesn't already exist as a SemanticTagBody" do
       before do
         stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/new_term')
@@ -299,12 +308,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
         before do
           # Create inmemory repository
           @repo = RDF::Repository.new
-          allow(subject.class).to receive(:repository).and_return(nil)
-          if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
-            allow(subject.persistence_strategy).to receive(:repository).and_return(@repo)
-          else  # < ActiveTriples 0.8
-            allow(subject).to receive(:repository).and_return(@repo)
-          end
+          ActiveTriples::Repositories.repositories[:default] = @repo
           subject.motivatedBy = RDFVocabularies::OA.commenting
           result
         end

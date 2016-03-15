@@ -44,7 +44,11 @@ module LD4L
           #     **  If one found, set @body to this TagBody
           #     **  If multiple found, use the first one found
           #           ### the same one may not be the first one found each time the query executes
-          @body = LD4L::OpenAnnotationRDF.configuration.unique_tags ? LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value(tag) : nil
+          if self.respond_to? 'persistence_strategy'  # >= ActiveTriples 0.8
+            @body = LD4L::OpenAnnotationRDF.configuration.unique_tags ? LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value(tag,self) : nil
+          else
+            @body = LD4L::OpenAnnotationRDF.configuration.unique_tags ? LD4L::OpenAnnotationRDF::TagBody.fetch_by_tag_value(tag) : nil
+          end
           if @body == nil
             if self.respond_to? 'persistence_strategy'  # >= ActiveTriples 0.8
               @body = LD4L::OpenAnnotationRDF::TagBody.new(
@@ -73,10 +77,17 @@ module LD4L
           #     * [CURRENT] Always create a new TagBody each time setTag is called and update @body
           #         ### This last options has the potential for orphaned TagBodys that no TagAnnotation references.
           # TODO Rethink the current behavior which is always to create a new TagBody potentially leaving around orphans.
-          @body = LD4L::OpenAnnotationRDF::TagBody.new(
-              ActiveTriples::LocalName::Minter.generate_local_name(
-                  LD4L::OpenAnnotationRDF::TagBody, 10, @localname_prefix,
-                  LD4L::OpenAnnotationRDF.configuration.localname_minter ))
+          if self.respond_to? 'persistence_strategy'  # >= ActiveTriples 0.8
+            @body = LD4L::OpenAnnotationRDF::TagBody.new(
+                ActiveTriples::LocalName::Minter.generate_local_name(
+                    LD4L::OpenAnnotationRDF::TagBody, 10, @localname_prefix,
+                    LD4L::OpenAnnotationRDF.configuration.localname_minter ),self)
+          else # < ActiveTriples 0.8
+            @body = LD4L::OpenAnnotationRDF::TagBody.new(
+                ActiveTriples::LocalName::Minter.generate_local_name(
+                    LD4L::OpenAnnotationRDF::TagBody, 10, @localname_prefix,
+                    LD4L::OpenAnnotationRDF.configuration.localname_minter ))
+          end
           @body.tag = tag
         end
         set_value(:hasBody, @body)

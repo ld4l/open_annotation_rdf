@@ -50,7 +50,7 @@ module LD4L
       # @param [String] tag value
       #
       # @return instance of TagBody if found; otherwise, nil
-      def self::fetch_by_tag_value( tag_value )
+      def self::fetch_by_tag_value( tag_value, parent_annotation=nil )
         raise ArgumentError, 'Argument must be a string with at least one character'  unless
             tag_value.kind_of?(String) && tag_value.size > 0
 
@@ -66,7 +66,8 @@ module LD4L
         results = query.execute(repo)
         unless( results.empty? )
           tagbody_uri = results[0].to_hash[:tagbody]
-          tagbody = LD4L::OpenAnnotationRDF::TagBody.new(tagbody_uri)
+          tagbody = LD4L::OpenAnnotationRDF::TagBody.new(tagbody_uri) if parent_annotation.nil?
+          tagbody = LD4L::OpenAnnotationRDF::TagBody.new(tagbody_uri,parent_annotation) unless parent_annotation.nil?
         end
         tagbody
       end
