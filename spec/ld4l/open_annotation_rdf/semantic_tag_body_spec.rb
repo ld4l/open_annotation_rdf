@@ -62,7 +62,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagBody' do
   describe 'type' do
     it "should be set to text and astext from new" do
       expected_results = subject.type
-      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expected_results = expected_results.to_a if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
       expect(expected_results.size).to eq 1
       expect(expected_results).to include RDFVocabularies::OA.SemanticTag
     end

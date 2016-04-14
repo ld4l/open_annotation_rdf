@@ -62,7 +62,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
   describe 'type' do
     it "should be set to text and ContentAsText from new" do
       expected_results = subject.type
-      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expected_results = expected_results.to_a if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
       expect(expected_results.size).to eq 2
       expect(expected_results).to include RDFVocabularies::DCTYPES.Text
       expect(expected_results).to include RDFVocabularies::CNT.ContentAsText
@@ -71,7 +71,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
     it "should be settable" do
       subject.type = RDFVocabularies::DCTYPES.Text
       expected_results = subject.type
-      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expected_results = expected_results.to_a if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
       expect(expected_results.size).to eq 1
       expect(expected_results).to include RDFVocabularies::DCTYPES.Text
     end
@@ -80,7 +80,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
       t = [RDFVocabularies::DCTYPES.Text, RDFVocabularies::CNT.ContentAsText]
       subject.set_value(:type,t)
       expected_results = subject.type
-      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expected_results = expected_results.to_a if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
       expect(expected_results.size).to eq 2
       expect(expected_results).to include RDFVocabularies::DCTYPES.Text
       expect(expected_results).to include RDFVocabularies::CNT.ContentAsText
@@ -90,7 +90,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
       subject.type = RDFVocabularies::DCTYPES.Text
       subject.type = RDFVocabularies::CNT.ContentAsText
       expected_results = subject.type
-      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expected_results = expected_results.to_a if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
       expect(expected_results.size).to eq 1
       expect(expected_results).to include RDFVocabularies::CNT.ContentAsText
     end
@@ -99,7 +99,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
       t = [RDFVocabularies::DCTYPES.Text, RDFVocabularies::CNT.ContentAsText]
       subject.set_value(:type,t)
       expected_results = subject.type
-      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expected_results = expected_results.to_a if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
       expect(expected_results.size).to eq 2
       expect(expected_results).to include RDFVocabularies::DCTYPES.Text
       expect(expected_results).to include RDFVocabularies::CNT.ContentAsText
@@ -109,7 +109,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentBody' do
       t[1] = RDFVocabularies::OA.SemanticTag   # dummy type for testing
       subject.set_value(:type,t)
       expected_results = subject.type
-      expected_results = expected_results.to_a if Object.const_defined?("ActiveTriples::Relation") && expected_results.kind_of?(ActiveTriples::Relation)
+      expected_results = expected_results.to_a if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
       expect(expected_results.size).to eq 2
       expect(expected_results).to include RDFVocabularies::OA.Tag
       expect(expected_results).to include RDFVocabularies::OA.SemanticTag

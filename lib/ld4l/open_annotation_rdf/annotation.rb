@@ -23,7 +23,7 @@ module LD4L
 
         # get motivatedBy
         m = a.get_values(:motivatedBy)
-        m = m.to_a if Object.const_defined?("ActiveTriples::Relation") && m.kind_of?(ActiveTriples::Relation)
+        m = m.to_a if Object::ActiveTriples.const_defined?("Relation") && m.kind_of?(ActiveTriples::Relation)
 
         # TODO:  Should m's class be validated?  I've seen it be RDF::Vocabulary::Term and RDF::URI.  For now, removing the validation.
         return a    unless m.kind_of?(Array) && m.size > 0

@@ -102,7 +102,7 @@ module LD4L
 
         # set motivatedBy
         m = get_values(:motivatedBy)
-        m = m.to_a if Object.const_defined?("ActiveTriples::Relation") && m.kind_of?(ActiveTriples::Relation)
+        m = m.to_a if Object::ActiveTriples.const_defined?("Relation") && m.kind_of?(ActiveTriples::Relation)
         set_value(:motivatedBy, RDFVocabularies::OA.tagging) unless m.kind_of?(Array) && m.size > 0
 
         # resume TagBody if it exists
