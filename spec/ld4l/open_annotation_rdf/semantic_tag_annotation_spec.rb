@@ -48,7 +48,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
       end
 
       it 'should not be settable' do
-        expect{ subject.set_subject! RDF::URI('http://example.org/moomin2') }.to raise_error
+        expect{ subject.set_subject! RDF::URI('http://example.org/moomin2') }.to raise_error(RuntimeError, 'Refusing update URI when one is already assigned!')
       end
     end
   end
@@ -109,19 +109,19 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
 
     context "when new value is nil" do
       it "should throw invalid arguement exception" do
-        expect{ subject.setTerm(nil) }.to raise_error
+        expect{ subject.setTerm(nil) }.to raise_error(ArgumentError, 'Argument must be a uri string or an instance of RDF::URI')
       end
     end
 
     context "when new value is a string of 0 length" do
       it "should throw invalid arguement exception" do
-        expect{ subject.setTerm("") }.to raise_error
+        expect{ subject.setTerm("") }.to raise_error(ArgumentError, 'Argument must be a uri string or an instance of RDF::URI')
       end
     end
 
     context "when new value is not a string or uri" do
       it "should throw invalid arguement exception" do
-        expect{ subject.setTerm(3) }.to raise_error
+        expect{ subject.setTerm(3) }.to raise_error(ArgumentError, 'Argument must be a uri string or an instance of RDF::URI')
       end
     end
 
@@ -130,6 +130,15 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
         tb1 = subject.setTerm('http://example.org/new_term')
         tb2 = subject.setTerm('http://example.org/new_term')
         expect(tb2).to eq tb1
+      end
+    end
+
+    describe '#getTerm' do
+      before do
+        subject.setTerm('TestTerm')
+      end
+      it "should get the tag" do
+        expect(subject.getTerm).to eq 'TestTerm'
       end
     end
 
@@ -294,14 +303,18 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
       context "and the item is not a blank node" do
 
         subject {LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new("123")}
+        let(:result) { subject.persist! }
 
         before do
           # Create inmemory repository
           @repo = RDF::Repository.new
-          allow(subject.class).to receive(:repository).and_return(nil)
-          allow(subject).to receive(:repository).and_return(@repo)
+          ActiveTriples::Repositories.repositories[:default] = @repo
           subject.motivatedBy = RDFVocabularies::OA.commenting
-          subject.persist!
+          result
+        end
+
+        it "should return true" do
+          expect(result).to eq true
         end
 
         it "should persist to the repository" do
@@ -359,7 +372,11 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
       end
 
       let(:child) do
-        LD4L::FoafRDF::Person.new('456')
+        if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
+          LD4L::FoafRDF::Person.new('456',subject)
+        else  # < ActiveTriples 0.8
+          LD4L::FoafRDF::Person.new('456')
+        end
       end
 
       it 'should empty the graph and remove it from the parent' do
@@ -486,7 +503,8 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
 
   describe '#type' do
     it 'should return the type configured on the parent class' do
-      expect(subject.type).to eq [LD4L::OpenAnnotationRDF::SemanticTagAnnotation.type]
+      expected_result = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.type.kind_of?(Array) ? LD4L::OpenAnnotationRDF::SemanticTagAnnotation.type : [LD4L::OpenAnnotationRDF::SemanticTagAnnotation.type]
+      expect(subject.type).to eq expected_result
     end
 
     it 'should set the type' do
@@ -517,17 +535,6 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
       subject.class.configure :rdf_label => custom_label
       subject << RDF::Statement(subject.rdf_subject, custom_label, RDF::Literal('New Label'))
       expect(subject.rdf_label).to eq ['New Label']
-    end
-  end
-
-  describe '#solrize' do
-    it 'should return a label for bnodes' do
-      expect(subject.solrize).to eq subject.rdf_label
-    end
-
-    it 'should return a string of the resource uri' do
-      subject.set_subject! 'http://example.org/moomin'
-      expect(subject.solrize).to eq 'http://example.org/moomin'
     end
   end
 

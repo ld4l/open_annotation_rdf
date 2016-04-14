@@ -4,6 +4,10 @@ module LD4L
 
       @localname_prefix = "sta"
 
+      configure :type => RDFVocabularies::OA.Annotation,
+                :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
+                :repository => :default
+
       property :hasBody, :predicate => RDFVocabularies::OA.hasBody, :class_name => LD4L::OpenAnnotationRDF::SemanticTagBody
 
 
@@ -38,7 +42,11 @@ module LD4L
         term_uri = RDF::URI(term_uri) unless term_uri.kind_of?(RDF::URI)
         return @body if old_term_uri && old_term_uri == term_uri.to_s
 
-        @body = LD4L::OpenAnnotationRDF::SemanticTagBody.new(term_uri)
+        if self.respond_to? 'persistence_strategy'  # >= ActiveTriples 0.8
+          @body = LD4L::OpenAnnotationRDF::SemanticTagBody.new(term_uri,self)
+        else # < ActiveTriples 0.8
+          @body = LD4L::OpenAnnotationRDF::SemanticTagBody.new(term_uri)
+        end
         set_value(:hasBody, @body)
         @body
       end
@@ -51,6 +59,7 @@ module LD4L
 
         # set motivatedBy
         m = get_values(:motivatedBy)
+        m = m.to_a if Object.const_defined?("ActiveTriples::Relation") && m.kind_of?(ActiveTriples::Relation)
         set_value(:motivatedBy, RDFVocabularies::OA.tagging) unless m.kind_of?(Array) && m.size > 0
 
         # resume SemanticTagBody if it exists
