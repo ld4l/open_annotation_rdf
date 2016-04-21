@@ -19,10 +19,9 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
 
   spec.add_dependency('rdf', '= 1.99.0')
-
-  spec.add_dependency('active-triples', '~> 0.5', '~> 0.6', '~>0.8.2')
+  spec.add_dependency('active-triples')
   spec.add_dependency('active_triples-local_name')
-  spec.add_dependency('ld4l-foaf_rdf', '~> 0.0')
+  spec.add_dependency('ld4l-foaf_rdf')
 
   spec.add_development_dependency('pry')
   spec.add_development_dependency('pry-byebug')
