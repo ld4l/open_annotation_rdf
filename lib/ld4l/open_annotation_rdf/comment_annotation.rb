@@ -4,11 +4,11 @@ module LD4L
 
       @localname_prefix="ca"
 
-      configure :type => RDFVocabularies::OA.Annotation,
+      configure :type => RDF::Vocab::OA.Annotation,
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
                 :repository => :default
 
-      property :hasBody, :predicate => RDFVocabularies::OA.hasBody, :class_name => LD4L::OpenAnnotationRDF::CommentBody
+      property :hasBody, :predicate => RDF::Vocab::OA.hasBody, :class_name => LD4L::OpenAnnotationRDF::CommentBody
 
 
       ##
@@ -54,7 +54,7 @@ module LD4L
         # set motivatedBy
         m = get_values(:motivatedBy)
         m = m.to_a if Object::ActiveTriples.const_defined?("Relation") && m.kind_of?(ActiveTriples::Relation)
-        set_value(:motivatedBy, RDFVocabularies::OA.commenting) unless m.kind_of?(Array) && m.size > 0
+        set_value(:motivatedBy, RDF::Vocab::OA.commenting) unless m.kind_of?(Array) && m.size > 0
 
         # resume CommentBody if it exists
         comment_uri = get_values(:hasBody).first

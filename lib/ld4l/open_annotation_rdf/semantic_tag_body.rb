@@ -8,7 +8,7 @@ module LD4L
       # USAGE: When creating a semantic tag body, use the URI of the controlled vocabulary term as the RDF Subject URI
       #        for an instance of this class.
 
-      configure :type => RDFVocabularies::OA.SemanticTag,
+      configure :type => RDF::Vocab::OA.SemanticTag,
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
                 :repository => :default
 
@@ -30,8 +30,8 @@ module LD4L
         repo = ActiveTriples::Repositories.repositories[repository]
         query = RDF::Query.new({
                                    :annotation => {
-                                       RDF.type =>  RDFVocabularies::OA.Annotation,
-                                       RDFVocabularies::OA.hasBody => term_uri,
+                                       RDF.type =>  RDF::Vocab::OA.Annotation,
+                                       RDF::Vocab::OA.hasBody => term_uri,
                                    }
                                })
         annotations = []

@@ -1,7 +1,4 @@
 require 'spec_helper'
-require 'ld4l/open_annotation_rdf/vocab/dctypes'
-require 'ld4l/open_annotation_rdf/vocab/oa'
-
 
 describe 'LD4L::OpenAnnotationRDF::TagBody' do
 
@@ -24,22 +21,22 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
 
     describe 'when changing subject' do
       before do
-        subject << RDF::Statement.new(subject.rdf_subject, RDF::DC.title, RDF::Literal('Comet in Moominland'))
-        subject << RDF::Statement.new(RDF::URI('http://example.org/moomin_comics'), RDF::DC.isPartOf, subject.rdf_subject)
-        subject << RDF::Statement.new(RDF::URI('http://example.org/moomin_comics'), RDF::DC.relation, 'http://example.org/moomin_land')
+        subject << RDF::Statement.new(subject.rdf_subject, RDF::Vocab::DC.title, RDF::Literal('Comet in Moominland'))
+        subject << RDF::Statement.new(RDF::URI('http://example.org/moomin_comics'), RDF::Vocab::DC.isPartOf, subject.rdf_subject)
+        subject << RDF::Statement.new(RDF::URI('http://example.org/moomin_comics'), RDF::Vocab::DC.relation, 'http://example.org/moomin_land')
         subject.set_subject! RDF::URI('http://example.org/moomin')
       end
 
       it 'should update graph subjects' do
-        expect(subject.has_statement?(RDF::Statement.new(subject.rdf_subject, RDF::DC.title, RDF::Literal('Comet in Moominland')))).to be true
+        expect(subject.has_statement?(RDF::Statement.new(subject.rdf_subject, RDF::Vocab::DC.title, RDF::Literal('Comet in Moominland')))).to be true
       end
 
       it 'should update graph objects' do
-        expect(subject.has_statement?(RDF::Statement.new(RDF::URI('http://example.org/moomin_comics'), RDF::DC.isPartOf, subject.rdf_subject))).to be true
+        expect(subject.has_statement?(RDF::Statement.new(RDF::URI('http://example.org/moomin_comics'), RDF::Vocab::DC.isPartOf, subject.rdf_subject))).to be true
       end
 
       it 'should leave other uris alone' do
-        expect(subject.has_statement?(RDF::Statement.new(RDF::URI('http://example.org/moomin_comics'), RDF::DC.relation, 'http://example.org/moomin_land'))).to be true
+        expect(subject.has_statement?(RDF::Statement.new(RDF::URI('http://example.org/moomin_comics'), RDF::Vocab::DC.relation, 'http://example.org/moomin_land'))).to be true
       end
     end
 
@@ -64,8 +61,8 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
       expected_results = subject.type
       expected_results = expected_results.to_a if subject.respond_to? 'persistence_strategy'   # >= ActiveTriples 0.8
       expect(expected_results.size).to eq 2
-      expect(expected_results).to include RDFVocabularies::OA.Tag
-      expect(expected_results).to include RDFVocabularies::CNT.ContentAsText
+      expect(expected_results).to include RDF::Vocab::OA.Tag
+      expect(expected_results).to include RDF::Vocab::CNT.ContentAsText
     end
   end
 
@@ -307,7 +304,7 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
 
   describe '#destroy!' do
     before do
-      subject << RDF::Statement(RDF::DC.LicenseDocument, RDF::DC.title, 'LICENSE')
+      subject << RDF::Statement(RDF::Vocab::DC.LicenseDocument, RDF::Vocab::DC.title, 'LICENSE')
     end
 
     subject { LD4L::OpenAnnotationRDF::TagBody.new('456')}
@@ -344,13 +341,13 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
 
   describe 'editing the graph' do
     it 'should write properties when statements are added' do
-      subject << RDF::Statement.new(subject.rdf_subject, RDFVocabularies::CNT.chars, 'good')
+      subject << RDF::Statement.new(subject.rdf_subject, RDF::Vocab::CNT.chars, 'good')
       expect(subject.tag).to include 'good'
     end
 
     it 'should delete properties when statements are removed' do
-      subject << RDF::Statement.new(subject.rdf_subject, RDFVocabularies::CNT.chars, 'good')
-      subject.delete RDF::Statement.new(subject.rdf_subject, RDFVocabularies::CNT.chars, 'good')
+      subject << RDF::Statement.new(subject.rdf_subject, RDF::Vocab::CNT.chars, 'good')
+      subject.delete RDF::Statement.new(subject.rdf_subject, RDF::Vocab::CNT.chars, 'good')
       expect(subject.tag).to eq []
     end
   end
@@ -359,18 +356,18 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
     before do
       class DummyPerson < ActiveTriples::Resource
         configure :type => RDF::URI('http://example.org/Person')
-        property :foafname, :predicate => RDF::FOAF.name
-        property :publications, :predicate => RDF::FOAF.publications, :class_name => 'DummyDocument'
-        property :knows, :predicate => RDF::FOAF.knows, :class_name => DummyPerson
+        property :foafname, :predicate => RDF::Vocab::FOAF.name
+        property :publications, :predicate => RDF::Vocab::FOAF.publications, :class_name => 'DummyDocument'
+        property :knows, :predicate => RDF::Vocab::FOAF.knows, :class_name => DummyPerson
       end
 
       class DummyDocument < ActiveTriples::Resource
         configure :type => RDF::URI('http://example.org/Document')
-        property :title, :predicate => RDF::DC.title
-        property :creator, :predicate => RDF::DC.creator, :class_name => 'DummyPerson'
+        property :title, :predicate => RDF::Vocab::DC.title
+        property :creator, :predicate => RDF::Vocab::DC.creator, :class_name => 'DummyPerson'
       end
 
-      LD4L::OpenAnnotationRDF::TagBody.property :item, :predicate => RDF::DC.relation, :class_name => DummyDocument
+      LD4L::OpenAnnotationRDF::TagBody.property :item, :predicate => RDF::Vocab::DC.relation, :class_name => DummyDocument
     end
 
     subject { LD4L::OpenAnnotationRDF::TagBody.new }
@@ -423,8 +420,10 @@ END
       document1.creator = [person1, person2]
       document2.creator = person1
       person1.knows = person2
+      person2.knows = person1
       subject.item = [document1]
-      expect(subject.item.first.creator.first.knows.first.foafname).to eq ['Bob']
+      expect(subject.item.first.creator.first.knows.first.foafname)
+          .to satisfy { |names| ['Alice', 'Bob'].include? names.first }
     end
   end
 end

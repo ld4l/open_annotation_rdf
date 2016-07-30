@@ -7,15 +7,15 @@ module LD4L
 
       @body = nil
 
-      configure :type => RDFVocabularies::OA.Annotation,
+      configure :type => RDF::Vocab::OA.Annotation,
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
                 :repository => :default
 
-      property :hasTarget,   :predicate => RDFVocabularies::OA.hasTarget    # :type => URI
-      property :hasBody,     :predicate => RDFVocabularies::OA.hasBody
-      property :annotatedBy, :predicate => RDFVocabularies::OA.annotatedBy, :class_name => LD4L::FoafRDF::Person
-      property :annotatedAt, :predicate => RDFVocabularies::OA.annotatedAt, :cast => false   # :type => xsd:dateTime    # the time Annotation was created
-      property :motivatedBy, :predicate => RDFVocabularies::OA.motivatedBy, :cast => false   # comes from RDFVocabularies::OA ontology
+      property :hasTarget,   :predicate => RDF::Vocab::OA.hasTarget    # :type => URI
+      property :hasBody,     :predicate => RDF::Vocab::OA.hasBody
+      property :annotatedBy, :predicate => RDF::Vocab::OA.annotatedBy, :class_name => LD4L::FoafRDF::Person
+      property :annotatedAt, :predicate => RDF::Vocab::OA.annotatedAt, :cast => false   # :type => xsd:dateTime    # the time Annotation was created
+      property :motivatedBy, :predicate => RDF::Vocab::OA.motivatedBy, :cast => false   # comes from RDF::Vocab::OA ontology
 
       def self.resume(uri_or_str)
         # Let ActiveTriples::Resource validate uri_or_str when creating new Annotation
@@ -32,17 +32,17 @@ module LD4L
         # motivatedBy is set
         m_uri = m.first
         # currently only support commenting and tagging
-        return LD4L::OpenAnnotationRDF::CommentAnnotation.new(uri_or_str) if m_uri == RDFVocabularies::OA.commenting
-        return a                                                       unless m_uri == RDFVocabularies::OA.tagging
+        return LD4L::OpenAnnotationRDF::CommentAnnotation.new(uri_or_str) if m_uri == RDF::Vocab::OA.commenting
+        return a                                                       unless m_uri == RDF::Vocab::OA.tagging
 
         # Tagging can be TagAnnotation or SemanticTagAnnotation.  Only way to tell is by checking type of body.
         sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new(uri_or_str)
         stb = sta.getBody
-        return sta                          unless stb.type.include?(RDFVocabularies::OA.Tag) || !stb.type.include?(RDFVocabularies::OA.SemanticTag)
+        return sta                          unless stb.type.include?(RDF::Vocab::OA.Tag) || !stb.type.include?(RDF::Vocab::OA.SemanticTag)
 
         ta = LD4L::OpenAnnotationRDF::TagAnnotation.new(uri_or_str)
         tb = ta.getBody
-        return ta                           if tb.type.include?(RDFVocabularies::OA.Tag)
+        return ta                           if tb.type.include?(RDF::Vocab::OA.Tag)
 
         # can't match to a known annotation type, so return as generic annotation
         return a
@@ -98,8 +98,8 @@ module LD4L
         repo = ActiveTriples::Repositories.repositories[repository]
         query = RDF::Query.new({
                                    :annotation => {
-                                       RDF.type =>  RDFVocabularies::OA.Annotation,
-                                       RDFVocabularies::OA.hasTarget => target_uri,
+                                       RDF.type =>  RDF::Vocab::OA.Annotation,
+                                       RDF::Vocab::OA.hasTarget => target_uri,
                                    }
                                })
         annotations = []

@@ -10,7 +10,7 @@ describe "LD4L::OpenAnnotationRDF" do
         config.unique_tags = false
       end
       class DummyAnnotation < LD4L::OpenAnnotationRDF::Annotation
-        configure :type => RDFVocabularies::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
+        configure :type => RDF::Vocab::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
       end
     end
     after do

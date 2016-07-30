@@ -7,7 +7,7 @@ describe 'LD4L::OpenAnnotationRDF' do
       context "when base_uri is not configured" do
         before do
           class DummyAnnotation < LD4L::OpenAnnotationRDF::Annotation
-            configure :type => RDFVocabularies::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
+            configure :type => RDF::Vocab::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
           end
         end
         after do
@@ -24,7 +24,7 @@ describe 'LD4L::OpenAnnotationRDF' do
             config.base_uri = "http://localhost/test_slash/"
           end
           class DummyAnnotation < LD4L::OpenAnnotationRDF::Annotation
-            configure :type => RDFVocabularies::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
+            configure :type => RDF::Vocab::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
           end
         end
         after do
@@ -43,7 +43,7 @@ describe 'LD4L::OpenAnnotationRDF' do
             config.base_uri = "http://localhost/test_no_slash"
           end
           class DummyAnnotation < LD4L::OpenAnnotationRDF::Annotation
-            configure :type => RDFVocabularies::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
+            configure :type => RDF::Vocab::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
           end
         end
         after do
@@ -86,7 +86,7 @@ describe 'LD4L::OpenAnnotationRDF' do
       context "when minter is nil" do
         before do
           class DummyAnnotation < LD4L::OpenAnnotationRDF::Annotation
-            configure :type => RDFVocabularies::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
+            configure :type => RDF::Vocab::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
           end
         end
         after do
@@ -108,7 +108,7 @@ describe 'LD4L::OpenAnnotationRDF' do
             config.localname_minter = lambda { |prefix=""| prefix+'_configured_'+SecureRandom.uuid }
           end
           class DummyAnnotation < LD4L::OpenAnnotationRDF::Annotation
-            configure :type => RDFVocabularies::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
+            configure :type => RDF::Vocab::OA.Annotation, :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri, :repository => :default
           end
         end
         after do
