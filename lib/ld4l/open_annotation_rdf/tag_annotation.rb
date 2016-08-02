@@ -8,8 +8,6 @@ module LD4L
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
                 :repository => :default
 
-      property :hasBody,  :predicate => RDF::Vocab::OA.hasBody,   :class_name => LD4L::OpenAnnotationRDF::TagBody
-
       # TODO: Should a tag be destroyed when the last annotation referencing the tag is destroyed?
 
       ##

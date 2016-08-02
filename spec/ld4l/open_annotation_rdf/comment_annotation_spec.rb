@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
 
+  after do
+    ActiveTriples::Repositories.repositories[LD4L::OpenAnnotationRDF::CommentAnnotation.repository].clear!
+  end
+
   subject { LD4L::OpenAnnotationRDF::CommentAnnotation.new }
 
   describe 'rdf_subject' do

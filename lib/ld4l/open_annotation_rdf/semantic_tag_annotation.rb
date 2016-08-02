@@ -8,9 +8,6 @@ module LD4L
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
                 :repository => :default
 
-      property :hasBody, :predicate => RDF::Vocab::OA.hasBody, :class_name => LD4L::OpenAnnotationRDF::SemanticTagBody
-
-
       # USAGE: Use setTerm to set the hasBody property to be the URI of the controlled vocabulary term that
       #        is the annotation.
 

@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe 'LD4L::OpenAnnotationRDF::Annotation' do
 
+  after do
+    ActiveTriples::Repositories.repositories[LD4L::OpenAnnotationRDF::CommentAnnotation.repository].clear!
+  end
+
   subject { LD4L::OpenAnnotationRDF::Annotation.new }
 
   describe 'rdf_subject' do
@@ -376,7 +380,8 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
             expect(@comment_anno.hasTarget.first.rdf_subject).to eq RDF::URI.new("http://searchworks.stanford.edu/view/666")
           end
           it "populates Comment bodies properly" do
-            body = @comment_anno.hasBody.first
+            # body = @comment_anno.hasBody.first
+            body = @comment_anno.getBody
             expect(body).to be_a LD4L::OpenAnnotationRDF::CommentBody
             expect(body.content.first).to eq @comment_value
             expect(body.type).to include(RDF::Vocab::CNT.ContentAsText)
@@ -413,7 +418,8 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
             expect(@tag_anno.hasTarget.first.rdf_subject).to eq RDF::URI.new("http://searchworks.stanford.edu/view/666")
           end
           it "populates Tag bodies properly" do
-            body = @tag_anno.hasBody.first
+            # body = @tag_anno.hasBody.first
+            body = @tag_anno.getBody
             expect(body).to be_a LD4L::OpenAnnotationRDF::TagBody
             expect(body.tag.first).to eq @tag_value
             expect(body.type).to include(RDF::Vocab::OA.Tag)
@@ -445,7 +451,8 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
             expect(@semantic_tag_anno.hasTarget.first.rdf_subject).to eq RDF::URI.new("http://searchworks.stanford.edu/view/666")
           end
           it "populates Tag bodies properly" do
-            body = @semantic_tag_anno.hasBody.first
+            # body = @semantic_tag_anno.hasBody.first
+            body = @semantic_tag_anno.getBody
             expect(body.rdf_subject.to_s).to eq @term_url
             expect(body).to be_a LD4L::OpenAnnotationRDF::SemanticTagBody
             expect(body.type).to include(RDF::Vocab::OA.SemanticTag)

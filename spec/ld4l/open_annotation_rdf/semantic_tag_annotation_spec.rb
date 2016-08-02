@@ -1,8 +1,10 @@
 require 'spec_helper'
 
-# TODO: Uses CommentBody as the annotation body, which is wrong.  Should be URI into controlled vocabulary.
-
 describe 'LD4L::OpenAnnotationRDF::SemanticTagAnnotation' do
+
+  after do
+    ActiveTriples::Repositories.repositories[LD4L::OpenAnnotationRDF::CommentAnnotation.repository].clear!
+  end
 
   subject { LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new }
 

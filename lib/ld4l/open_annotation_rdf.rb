@@ -29,6 +29,7 @@ module LD4L
     # autoload classes
     autoload :Configuration,         'ld4l/open_annotation_rdf/configuration'
     autoload :Annotation,            'ld4l/open_annotation_rdf/annotation'
+    autoload :AnnotationGenericBody, 'ld4l/open_annotation_rdf/annotation_generic_body'
     autoload :CommentAnnotation,     'ld4l/open_annotation_rdf/comment_annotation'
     autoload :CommentBody,           'ld4l/open_annotation_rdf/comment_body'
     autoload :TagAnnotation,         'ld4l/open_annotation_rdf/tag_annotation'

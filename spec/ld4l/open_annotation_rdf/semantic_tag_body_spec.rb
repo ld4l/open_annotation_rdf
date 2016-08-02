@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe 'LD4L::OpenAnnotationRDF::SemanticTagBody' do
 
+  after do
+    ActiveTriples::Repositories.repositories[LD4L::OpenAnnotationRDF::CommentAnnotation.repository].clear!
+  end
+
   subject { LD4L::OpenAnnotationRDF::SemanticTagBody.new }
 
   describe 'rdf_subject' do
@@ -93,7 +97,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagBody' do
     end
 
     context "when terms exist in the repository" do
-      before(:all) do
+      before do
         # Create inmemory repository
         sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta1')
         sta.setTerm(RDF::URI("http://example.org/EXISTING_term"))
@@ -103,11 +107,6 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagBody' do
         sta.persist!
         stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/UNUSED_term')
         stb.persist!
-      end
-      after(:all) do
-        LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta1').destroy!
-        LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta2').destroy!
-        LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/UNUSED_term').destroy!
       end
 
       context "and term is passed as string URI" do
@@ -170,7 +169,7 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagBody' do
     end
 
     context "when terms exist in the repository" do
-      before(:all) do
+      before do
         # Create inmemory repository
         sta = LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta1')
         sta.setTerm(RDF::URI("http://example.org/EXISTING_term"))
@@ -180,11 +179,6 @@ describe 'LD4L::OpenAnnotationRDF::SemanticTagBody' do
         sta.persist!
         stb = LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/UNUSED_term')
         stb.persist!
-      end
-      after(:all) do
-        LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta1').destroy!
-        LD4L::OpenAnnotationRDF::SemanticTagAnnotation.new('http://example.org/sta2').destroy!
-        LD4L::OpenAnnotationRDF::SemanticTagBody.new('http://example.org/UNUSED_term').destroy!
       end
 
       context "and term is passed as string URI" do

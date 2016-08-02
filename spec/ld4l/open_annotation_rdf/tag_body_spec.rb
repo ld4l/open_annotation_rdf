@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe 'LD4L::OpenAnnotationRDF::TagBody' do
 
+  after do
+    ActiveTriples::Repositories.repositories[LD4L::OpenAnnotationRDF::CommentAnnotation.repository].clear!
+  end
+
   subject { LD4L::OpenAnnotationRDF::TagBody.new }
 
   describe 'rdf_subject' do
@@ -104,7 +108,7 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
     end
 
     context "when tags exist in the repository" do
-      before(:all) do
+      before do
         # Create inmemory repository
         ta = LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta1')
         ta.setTag('EXISTING_tag')
@@ -115,11 +119,6 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
         tb = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/UNUSED_tag')
         tb.tag = 'UNUSED_tag'
         tb.persist!
-      end
-      after(:all) do
-        LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta1').destroy!
-        LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta2').destroy!
-        LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/UNUSED_tag').destroy!
       end
 
       it "should find annotations using a tag" do
@@ -162,7 +161,7 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
     end
 
     context "when tags exist in the repository" do
-      before(:all) do
+      before do
         # Create inmemory repository
         ta = LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta1')
         ta.setTag('EXISTING_tag')
@@ -173,11 +172,6 @@ describe 'LD4L::OpenAnnotationRDF::TagBody' do
         tb = LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/UNUSED_tag')
         tb.tag = 'UNUSED_tag'
         tb.persist!
-      end
-      after(:all) do
-        LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta1').destroy!
-        LD4L::OpenAnnotationRDF::TagAnnotation.new('http://example.org/ta2').destroy!
-        LD4L::OpenAnnotationRDF::TagBody.new('http://example.org/UNUSED_tag').destroy!
       end
 
       it "should not find non-existent tag" do
