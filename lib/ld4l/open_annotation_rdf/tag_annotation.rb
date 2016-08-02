@@ -4,11 +4,9 @@ module LD4L
 
       @localname_prefix="ta"
 
-      configure :type => RDFVocabularies::OA.Annotation,
+      configure :type => RDF::Vocab::OA.Annotation,
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
                 :repository => :default
-
-      property :hasBody,  :predicate => RDFVocabularies::OA.hasBody,   :class_name => LD4L::OpenAnnotationRDF::TagBody
 
       # TODO: Should a tag be destroyed when the last annotation referencing the tag is destroyed?
 
@@ -103,7 +101,7 @@ module LD4L
         # set motivatedBy
         m = get_values(:motivatedBy)
         m = m.to_a if Object::ActiveTriples.const_defined?("Relation") && m.kind_of?(ActiveTriples::Relation)
-        set_value(:motivatedBy, RDFVocabularies::OA.tagging) unless m.kind_of?(Array) && m.size > 0
+        set_value(:motivatedBy, RDF::Vocab::OA.tagging) unless m.kind_of?(Array) && m.size > 0
 
         # resume TagBody if it exists
         tag_uri = get_values(:hasBody).first

@@ -4,9 +4,6 @@ require 'active_triples/local_name'
 require	'linkeddata'
 require 'ld4l/foaf_rdf'
 require 'ld4l/open_annotation_rdf/version'
-require 'ld4l/open_annotation_rdf/vocab/oa'
-require 'ld4l/open_annotation_rdf/vocab/cnt'
-require 'ld4l/open_annotation_rdf/vocab/dctypes'
 
 
 module LD4L
@@ -29,38 +26,16 @@ module LD4L
       yield(configuration)
     end
 
-
-    # RDF vocabularies
-    autoload :OA,                    'ld4l/open_annotation_rdf/vocab/oa'
-    autoload :CNT,                   'ld4l/open_annotation_rdf/vocab/cnt'
-    autoload :DCTYPES,               'ld4l/open_annotation_rdf/vocab/dctypes'
-
-
     # autoload classes
     autoload :Configuration,         'ld4l/open_annotation_rdf/configuration'
     autoload :Annotation,            'ld4l/open_annotation_rdf/annotation'
+    autoload :AnnotationGenericBody, 'ld4l/open_annotation_rdf/annotation_generic_body'
     autoload :CommentAnnotation,     'ld4l/open_annotation_rdf/comment_annotation'
     autoload :CommentBody,           'ld4l/open_annotation_rdf/comment_body'
     autoload :TagAnnotation,         'ld4l/open_annotation_rdf/tag_annotation'
     autoload :TagBody,               'ld4l/open_annotation_rdf/tag_body'
     autoload :SemanticTagAnnotation, 'ld4l/open_annotation_rdf/semantic_tag_annotation'
     autoload :SemanticTagBody,       'ld4l/open_annotation_rdf/semantic_tag_body'
-
-    def self.class_from_string(class_name, container_class=Kernel)
-      container_class = container_class.name if container_class.is_a? Module
-      container_parts = container_class.split('::')
-      (container_parts + class_name.split('::')).flatten.inject(Kernel) do |mod, class_name|
-        if mod == Kernel
-          Object.const_get(class_name)
-        elsif mod.const_defined? class_name.to_sym
-          mod.const_get(class_name)
-        else
-          container_parts.pop
-          class_from_string(class_name, container_parts.join('::'))
-        end
-      end
-    end
-
   end
 end
 

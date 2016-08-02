@@ -5,18 +5,18 @@ module LD4L
       class << self; attr_reader :localname_prefix end
       @localname_prefix="cb"
 
-      configure :type => RDFVocabularies::CNT.ContentAsText,
+      configure :type => RDF::Vocab::CNT.ContentAsText,
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
                 :repository => :default
 
-      property :content, :predicate => RDFVocabularies::CNT.chars,  :cast => false  # :type => XSD.string
-      property :format,  :predicate => RDF::DC.format,              :cast => false  # :type => XSD.string
+      property :content, :predicate => RDF::Vocab::CNT.chars,  :cast => false  # :type => XSD.string
+      property :format,  :predicate => RDF::Vocab::DC.format,              :cast => false  # :type => XSD.string
 
       def initialize(*args)
         super(*args)
 
         t = get_values(:type)
-        t << RDFVocabularies::DCTYPES.Text
+        t << RDF::Vocab::DCMIType.Text
         set_value(:type,t)
       end
     end

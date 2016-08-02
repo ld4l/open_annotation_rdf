@@ -5,11 +5,11 @@ module LD4L
       class << self; attr_reader :localname_prefix end
       @localname_prefix="tb"
 
-      configure :type => RDFVocabularies::OA.Tag,
+      configure :type => RDF::Vocab::OA.Tag,
                 :base_uri => LD4L::OpenAnnotationRDF.configuration.base_uri,
                 :repository => :default
 
-      property :tag,     :predicate => RDFVocabularies::CNT.chars,   :cast => false  # :type => XSD.string
+      property :tag,     :predicate => RDF::Vocab::CNT.chars,   :cast => false  # :type => XSD.string
 
       ##
       # Get a list of annotations using the tag value.
@@ -31,8 +31,8 @@ module LD4L
         repo = ActiveTriples::Repositories.repositories[repository]
         query = RDF::Query.new({
                                    :annotation => {
-                                       RDF.type =>  RDFVocabularies::OA.Annotation,
-                                       RDFVocabularies::OA.hasBody => tag_uri,
+                                       RDF.type =>  RDF::Vocab::OA.Annotation,
+                                       RDF::Vocab::OA.hasBody => tag_uri,
                                    }
                                })
         results = query.execute(repo)
@@ -57,8 +57,8 @@ module LD4L
         repo = ActiveTriples::Repositories.repositories[repository]
         query = RDF::Query.new({
           :tagbody => {
-            RDF.type =>  RDFVocabularies::OA.Tag,
-            RDFVocabularies::CNT.chars => tag_value,
+            RDF.type =>  RDF::Vocab::OA.Tag,
+            RDF::Vocab::CNT.chars => tag_value,
           }
         })
 
@@ -76,7 +76,7 @@ module LD4L
         super(*args)
 
         t = get_values(:type)
-        t << RDFVocabularies::CNT.ContentAsText
+        t << RDF::Vocab::CNT.ContentAsText
         set_value(:type,t)
       end
     end
