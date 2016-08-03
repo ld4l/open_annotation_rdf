@@ -50,7 +50,7 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
       end
 
       it 'should not be settable' do
-        expect{ subject.set_subject! RDF::URI('http://example.org/moomin2') }.to raise_error(RuntimeError, 'Refusing update URI when one is already assigned!')
+        expect{ subject.set_subject! RDF::URI('http://example.org/moomin2') }.to raise_error(RuntimeError, 'Refusing to update URI when one is already assigned!')
       end
     end
   end
@@ -109,9 +109,9 @@ describe 'LD4L::OpenAnnotationRDF::CommentAnnotation' do
     it "should create an instance of LD4L::OpenAnnotationRDF::CommentBody and set hasBody property to comment URI" do
       subject.setComment('I like this.')
       expect(subject.hasBody.first.rdf_subject).to be_kind_of RDF::URI
-      expect(subject.hasBody.first.rdf_subject.to_s).to match match /http:\/\/localhost\/[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/
+      expect(subject.hasBody.first.rdf_subject.to_s).to match /http:\/\/localhost\/[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/
       expect(subject.getBody).to be_kind_of LD4L::OpenAnnotationRDF::CommentBody
-      expect(subject.getBody.rdf_subject.to_s).to match match /http:\/\/localhost\/[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/
+      expect(subject.getBody.rdf_subject.to_s).to match /http:\/\/localhost\/[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/
       expect(subject.getBody).not_to be_persisted
     end
 

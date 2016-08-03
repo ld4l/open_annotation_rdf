@@ -55,7 +55,7 @@ describe 'LD4L::OpenAnnotationRDF::Annotation' do
       end
 
       it 'should not be settable' do
-        expect{ subject.set_subject! RDF::URI('http://example.org/moomin2') }.to raise_error(RuntimeError, 'Refusing update URI when one is already assigned!')
+        expect{ subject.set_subject! RDF::URI('http://example.org/moomin2') }.to raise_error(RuntimeError, 'Refusing to update URI when one is already assigned!')
       end
     end
   end
